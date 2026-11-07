@@ -217,7 +217,8 @@ export function ChatView() {
 
               if (
                 (part.type === 'tool-propose_meal' || part.type === 'tool-propose_workout') &&
-                part.state === 'output-available'
+                part.state === 'output-available' &&
+                (part.output as { kind?: string } | undefined)?.kind
               ) {
                 return (
                   <div key={key} className="w-full">
