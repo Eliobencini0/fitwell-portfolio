@@ -4,6 +4,7 @@ import { getT } from '@/i18n/server';
 import { profile as profileMessages } from '@/i18n/messages/profile';
 import { LanguageSelector } from '@/components/profile/LanguageSelector';
 import { ProfileForm } from '@/components/profile/ProfileForm';
+import { LogoutButton } from '@/components/profile/LogoutButton';
 
 export default async function ProfilePage() {
   const t = await getT(profileMessages);
@@ -56,6 +57,8 @@ export default async function ProfilePage() {
           <LanguageSelector />
         </div>
       </div>
+
+      <LogoutButton />
     </div>
   );
 }
