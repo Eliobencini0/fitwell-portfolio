@@ -23,7 +23,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                L'app ha riscontrato un errore imprevisto. Ricarica la pagina per continuare.
+                L&apos;app ha riscontrato un errore imprevisto. Ricarica la pagina per continuare.
               </p>
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <pre className="text-xs bg-muted p-3 rounded overflow-auto max-h-40">

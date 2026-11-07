@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { loginSchema } from '@/lib/validations';
+import { safeNextPath } from '@/lib/date';
 import { LoadingSpinner } from '@/components/ui/success-checkmark';
 
 export function LoginForm() {
@@ -48,7 +49,7 @@ export function LoginForm() {
 
       if (data.user) {
         toast.success('Accesso effettuato!');
-        router.push('/');
+        router.push(safeNextPath(new URLSearchParams(window.location.search).get('next')));
         router.refresh();
       }
     } catch {

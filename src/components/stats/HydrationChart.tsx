@@ -22,7 +22,7 @@ export function HydrationChart({ data }: HydrationChartProps) {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground text-sm">
-            Nessun dato disponibile. Traccia l'idratazione per vedere il grafico.
+            Nessun dato disponibile. Traccia l&apos;idratazione per vedere il grafico.
           </div>
         </CardContent>
       </Card>

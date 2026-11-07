@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { isValidYmd } from '@/lib/date';
+
+const ymdDate = z.string().refine(isValidYmd, 'Formato data non valido');
 
 // Auth schemas
 export const loginSchema = z.object({
@@ -21,13 +24,13 @@ export const activitySchema = z.object({
   protein: z.number().min(0).max(500).optional(),
   fats: z.number().min(0).max(500).optional(),
   activity_type: z.enum(['meal', 'workout', 'meditation', 'supplement', 'other']),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato data non valido'),
+  date: ymdDate,
 });
 
 // Hydration schema
 export const hydrationSchema = z.object({
   glasses: z.number().int().min(0, 'Non può essere negativo').max(50, 'Valore troppo alto'),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato data non valido'),
+  date: ymdDate,
 });
 
 // Profile schema
@@ -46,7 +49,7 @@ export const bodyMeasurementSchema = z.object({
   bodyFatPercentage: z.number().min(0).max(100).optional(),
   muscleMass: z.number().min(0).max(300).optional(),
   visceralFat: z.number().min(0).max(50).optional(),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato data non valido'),
+  date: ymdDate,
 });
 
 // Types

@@ -4,20 +4,10 @@ import { DaySelector } from '@/components/dashboard/DaySelector';
 import { CalorieBalance } from '@/components/dashboard/CalorieBalance';
 import { HydrationCompact } from '@/components/dashboard/HydrationCompact';
 import { ActivitySection } from '@/components/dashboard/ActivitySection';
+import { isValidYmd, todayYmd } from '@/lib/date';
 
 interface DashboardPageProps {
   searchParams?: Promise<{ date?: string }>;
-}
-
-function isValidDateParam(value: string | undefined): value is string {
-  return !!value && /^\d{4}-\d{2}-\d{2}$/.test(value);
-}
-
-function formatDateToYmd(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }
 
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
@@ -29,9 +19,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   }
 
   const params = await searchParams;
-  const today = new Date();
-  const fallbackDate = formatDateToYmd(today);
-  const selectedDate = isValidDateParam(params?.date) ? params.date : fallbackDate;
+  const fallbackDate = todayYmd();
+  const selectedDate = isValidYmd(params?.date) ? params.date : fallbackDate;
   const selectedDateObj = new Date(`${selectedDate}T00:00:00`);
   const todayAtMidnight = new Date(`${fallbackDate}T00:00:00`);
   const dayDiff = Math.round(
@@ -71,14 +60,15 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       .select('*')
       .eq('user_id', user.id)
       .eq('date', selectedDate)
-      .single(),
+      .maybeSingle(),
     supabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)
-      .single(),
+      .maybeSingle(),
   ]);
 
+  if (activitiesRes.error) console.error('daily_activities query failed', activitiesRes.error);
   const activities = activitiesRes.data || [];
   const hydration = hydrationRes.data;
   const profile = profileRes.data;
@@ -120,20 +110,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   return (
     <div className="space-y-6 pb-24">
-      {/* Date Header with Calendar Icon */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-foreground">
-          {headingText}
-        </h2>
-        <button className="w-10 h-10 rounded-xl bg-card border border-border/50 flex items-center justify-center text-primary hover:bg-card/80 transition-colors">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <rect x="3" y="4" width="18" height="18" rx="2" strokeWidth="2" />
-            <line x1="16" y1="2" x2="16" y2="6" strokeWidth="2" />
-            <line x1="8" y1="2" x2="8" y2="6" strokeWidth="2" />
-            <line x1="3" y1="10" x2="21" y2="10" strokeWidth="2" />
-          </svg>
-        </button>
-      </div>
+      <h2 className="text-xl font-bold text-foreground">
+        {headingText}
+      </h2>
 
       {/* Day Selector */}
       <DaySelector currentDate={selectedDate} />
