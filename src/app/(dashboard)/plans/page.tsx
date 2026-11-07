@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { features } from '@/lib/features';
 import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getT } from '@/i18n/server';
@@ -21,6 +22,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PlansPage() {
+  if (!features.plans) {
+    redirect('/dashboard');
+  }
+
   const t = await getT(plans);
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
