@@ -2,6 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { useT } from '@/i18n/client';
+import { stats } from '@/i18n/messages/stats';
 
 interface MacrosData {
   carbs: number;
@@ -20,17 +22,18 @@ const COLORS = {
 };
 
 export function MacrosChart({ data }: MacrosChartProps) {
+  const t = useT(stats);
   const total = data.carbs + data.protein + data.fats;
 
   if (total === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">🥗 Distribuzione Macro (ultimi 7 gg)</CardTitle>
+          <CardTitle className="text-base">{t('macrosTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground text-sm">
-            Nessun dato disponibile. Aggiungi pasti per vedere la distribuzione.
+            {t('macrosEmpty')}
           </div>
         </CardContent>
       </Card>
@@ -38,15 +41,15 @@ export function MacrosChart({ data }: MacrosChartProps) {
   }
 
   const chartData = [
-    { name: 'Carboidrati', value: data.carbs, percentage: ((data.carbs / total) * 100).toFixed(0) },
-    { name: 'Proteine', value: data.protein, percentage: ((data.protein / total) * 100).toFixed(0) },
-    { name: 'Grassi', value: data.fats, percentage: ((data.fats / total) * 100).toFixed(0) },
+    { name: t('carbs'), value: data.carbs, percentage: ((data.carbs / total) * 100).toFixed(0) },
+    { name: t('protein'), value: data.protein, percentage: ((data.protein / total) * 100).toFixed(0) },
+    { name: t('fats'), value: data.fats, percentage: ((data.fats / total) * 100).toFixed(0) },
   ];
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">🥗 Distribuzione Macro (ultimi 7 gg)</CardTitle>
+        <CardTitle className="text-base">{t('macrosTitle')}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={250}>

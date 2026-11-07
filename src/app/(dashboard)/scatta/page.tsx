@@ -1,22 +1,27 @@
-export default function ScattaPage() {
+import { getT } from '@/i18n/server';
+import { misc } from '@/i18n/messages/misc';
+
+export default async function ScattaPage() {
+  const t = await getT(misc);
+
   return (
     <div className="space-y-6 pb-24">
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">📸 Scatta</h2>
-        <p className="text-muted-foreground">Scatta foto dei tuoi pasti</p>
+        <h2 className="text-2xl font-bold mb-2">📸 {t('scattaTitle')}</h2>
+        <p className="text-muted-foreground">{t('scattaSubtitle')}</p>
       </div>
 
       <div className="bg-card rounded-3xl p-12 border border-border/50 text-center">
         <div className="text-6xl mb-4">📷</div>
-        <h3 className="text-lg font-semibold mb-2">Prossimamente</h3>
+        <h3 className="text-lg font-semibold mb-2">{t('comingSoon')}</h3>
         <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-          Qui potrai scattare foto dei tuoi pasti per tracciare visivamente la tua alimentazione
+          {t('scattaIntro')}
         </p>
       </div>
 
       <div className="space-y-3">
         <div className="text-sm font-medium text-muted-foreground">
-          Funzionalità future:
+          {t('futureFeatures')}
         </div>
         <div className="grid gap-3">
           <div className="bg-card/50 rounded-2xl p-4 border border-border/30">
@@ -25,8 +30,8 @@ export default function ScattaPage() {
                 📱
               </div>
               <div>
-                <div className="font-medium text-sm">Fotocamera integrata</div>
-                <div className="text-xs text-muted-foreground">Scatta direttamente dall&apos;app</div>
+                <div className="font-medium text-sm">{t('scattaCameraTitle')}</div>
+                <div className="text-xs text-muted-foreground">{t('scattaCameraDesc')}</div>
               </div>
             </div>
           </div>
@@ -37,8 +42,8 @@ export default function ScattaPage() {
                 🤖
               </div>
               <div>
-                <div className="font-medium text-sm">Riconoscimento AI</div>
-                <div className="text-xs text-muted-foreground">Calorie automatiche dalle foto</div>
+                <div className="font-medium text-sm">{t('scattaAiTitle')}</div>
+                <div className="text-xs text-muted-foreground">{t('scattaAiDesc')}</div>
               </div>
             </div>
           </div>
@@ -49,8 +54,8 @@ export default function ScattaPage() {
                 📚
               </div>
               <div>
-                <div className="font-medium text-sm">Galleria pasti</div>
-                <div className="text-xs text-muted-foreground">Storico fotografico</div>
+                <div className="font-medium text-sm">{t('scattaGalleryTitle')}</div>
+                <div className="text-xs text-muted-foreground">{t('scattaGalleryDesc')}</div>
               </div>
             </div>
           </div>

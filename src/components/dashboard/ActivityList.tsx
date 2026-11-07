@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button';
 import { toggleActivity, deleteActivity } from '@/lib/actions';
 import { toast } from 'sonner';
 import type { DailyActivity } from '@/types';
+import { useT } from '@/i18n/client';
+import { common } from '@/i18n/messages/common';
+import { dashboard as messages } from '@/i18n/messages/dashboard';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +30,8 @@ const activityIcons: Record<string, string> = {
 
 export function ActivityList({ activities }: ActivityListProps) {
   const router = useRouter();
+  const t = useT(messages);
+  const tc = useT(common);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handleToggle = async (activityId: string, currentStatus: boolean) => {
@@ -36,10 +41,10 @@ export function ActivityList({ activities }: ActivityListProps) {
       await toggleActivity(activityId, !currentStatus);
       router.refresh();
       toast.success(
-        !currentStatus ? 'Attività completata! 🎉' : 'Attività non completata'
+        !currentStatus ? t('activityCompleted') : t('activityNotCompleted')
       );
     } catch (error) {
-      toast.error('Errore nell\'aggiornamento');
+      toast.error(t('updateError'));
       console.error(error);
     } finally {
       setLoadingId(null);
@@ -47,7 +52,7 @@ export function ActivityList({ activities }: ActivityListProps) {
   };
 
   const handleDelete = async (activityId: string) => {
-    if (!confirm('Sei sicuro di voler eliminare questa attività?')) {
+    if (!confirm(t('confirmDelete'))) {
       return;
     }
 
@@ -56,9 +61,9 @@ export function ActivityList({ activities }: ActivityListProps) {
     try {
       await deleteActivity(activityId);
       router.refresh();
-      toast.success('Attività eliminata');
+      toast.success(t('activityDeleted'));
     } catch (error) {
-      toast.error('Errore nell\'eliminazione');
+      toast.error(t('deleteError'));
       console.error(error);
     } finally {
       setLoadingId(null);
@@ -70,10 +75,10 @@ export function ActivityList({ activities }: ActivityListProps) {
       <div className="bg-card rounded-lg p-8 border border-border text-center">
         <div className="text-4xl mb-3">📝</div>
         <p className="text-sm text-muted-foreground">
-          Nessuna attività pianificata per oggi.
+          {t('noActivitiesToday')}
         </p>
         <p className="text-xs text-muted-foreground mt-2">
-          Aggiungi la tua prima attività!
+          {t('addFirstActivity')}
         </p>
       </div>
     );
@@ -138,7 +143,7 @@ export function ActivityList({ activities }: ActivityListProps) {
                 }`}
               >
                 {activity.calories > 0 ? '+' : ''}
-                {activity.calories} cal
+                {activity.calories} {t('calUnit')}
               </div>
             </div>
 
@@ -158,13 +163,13 @@ export function ActivityList({ activities }: ActivityListProps) {
                 <DropdownMenuItem
                   onClick={() => handleToggle(activity.id, activity.completed)}
                 >
-                  {activity.completed ? '↩️ Segna non completata' : '✅ Segna completata'}
+                  {activity.completed ? t('markNotCompleted') : t('markCompleted')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => handleDelete(activity.id)}
                   className="text-destructive"
                 >
-                  🗑️ Elimina
+                  🗑️ {tc('delete')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

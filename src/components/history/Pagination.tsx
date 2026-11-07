@@ -3,6 +3,8 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useT } from '@/i18n/client';
+import { history } from '@/i18n/messages/history';
 
 interface PaginationProps {
   currentPage: number;
@@ -11,6 +13,7 @@ interface PaginationProps {
 }
 
 export function Pagination({ currentPage, totalPages, totalItems }: PaginationProps) {
+  const t = useT(history);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -25,7 +28,7 @@ export function Pagination({ currentPage, totalPages, totalItems }: PaginationPr
   return (
     <div className="flex items-center justify-between pt-4 border-t border-border">
       <div className="text-sm text-muted-foreground">
-        Pagina {currentPage} di {totalPages} • {totalItems} attività
+        {t('pageOf', { current: currentPage, total: totalPages, items: totalItems })}
       </div>
 
       <div className="flex gap-2">
@@ -36,7 +39,7 @@ export function Pagination({ currentPage, totalPages, totalItems }: PaginationPr
           disabled={currentPage <= 1}
         >
           <ChevronLeft className="w-4 h-4 mr-1" />
-          Prec
+          {t('prev')}
         </Button>
         <Button
           variant="outline"
@@ -44,7 +47,7 @@ export function Pagination({ currentPage, totalPages, totalItems }: PaginationPr
           onClick={() => goToPage(currentPage + 1)}
           disabled={currentPage >= totalPages}
         >
-          Succ
+          {t('next')}
           <ChevronRight className="w-4 h-4 ml-1" />
         </Button>
       </div>

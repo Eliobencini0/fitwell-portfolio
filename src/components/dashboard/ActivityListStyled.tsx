@@ -10,6 +10,8 @@ import { AnimatedList, AnimatedListItem } from '@/components/ui/animated-list';
 import { LoadingSpinner } from '@/components/ui/success-checkmark';
 import { useUndo } from '@/hooks/useUndo';
 import { createActivity } from '@/lib/actions';
+import { useT } from '@/i18n/client';
+import { dashboard as messages } from '@/i18n/messages/dashboard';
 
 interface ActivityListStyledProps {
   activities: DailyActivity[];
@@ -18,6 +20,7 @@ interface ActivityListStyledProps {
 
 export function ActivityListStyled({ activities, filter }: ActivityListStyledProps) {
   const router = useRouter();
+  const t = useT(messages);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const { executeWithUndo } = useUndo<DailyActivity>();
 
@@ -35,9 +38,9 @@ export function ActivityListStyled({ activities, filter }: ActivityListStyledPro
     try {
       await toggleActivity(activityId, !currentStatus);
       router.refresh();
-      toast.success(!currentStatus ? 'Completata! 🎉' : 'Non completata');
+      toast.success(!currentStatus ? t('completedShort') : t('notCompletedShort'));
     } catch (error) {
-      toast.error('Errore');
+      toast.error(t('errorShort'));
       console.error(error);
     } finally {
       setLoadingId(null);
@@ -66,10 +69,10 @@ export function ActivityListStyled({ activities, filter }: ActivityListStyledPro
           });
           router.refresh();
         },
-        'Attività eliminata'
+        t('activityDeleted')
       );
     } catch (error) {
-      toast.error('Errore durante l\'eliminazione');
+      toast.error(t('deleteErrorLong'));
       console.error(error);
     } finally {
       setLoadingId(null);
@@ -81,7 +84,7 @@ export function ActivityListStyled({ activities, filter }: ActivityListStyledPro
       <div className="text-center py-12">
         <div className="text-4xl mb-3">📝</div>
         <p className="text-sm text-muted-foreground">
-          Nessuna attività
+          {t('noActivities')}
         </p>
       </div>
     );
@@ -161,8 +164,8 @@ export function ActivityListStyled({ activities, filter }: ActivityListStyledPro
                   }
                 `}
               >
-                {activity.calories > 0 && `${activity.calories} kcal`}
-                {activity.calories < 0 && `${Math.abs(activity.calories)} kcal bruciate`}
+                {activity.calories > 0 && t('kcal', { n: activity.calories })}
+                {activity.calories < 0 && t('kcalBurned', { n: Math.abs(activity.calories) })}
                 {activity.calories === 0 && activity.description}
               </p>
             </div>

@@ -17,6 +17,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createActivity } from '@/lib/actions';
 import { toast } from 'sonner';
 import type { ActivityType } from '@/types';
+import { useT } from '@/i18n/client';
+import { common } from '@/i18n/messages/common';
+import { dashboard as messages } from '@/i18n/messages/dashboard';
 
 interface AddActivityButtonProps {
   date: string;
@@ -24,6 +27,8 @@ interface AddActivityButtonProps {
 
 export function AddActivityButton({ date }: AddActivityButtonProps) {
   const router = useRouter();
+  const t = useT(messages);
+  const tc = useT(common);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -43,7 +48,7 @@ export function AddActivityButton({ date }: AddActivityButtonProps) {
     e.preventDefault();
 
     if (!title.trim()) {
-      toast.error('Il titolo è obbligatorio');
+      toast.error(t('titleRequired'));
       return;
     }
 
@@ -58,7 +63,7 @@ export function AddActivityButton({ date }: AddActivityButtonProps) {
         calories: parseInt(calories) || 0,
       });
 
-      toast.success('Attività aggiunta!');
+      toast.success(t('activityAdded'));
       setOpen(false);
 
       // Reset form
@@ -69,7 +74,7 @@ export function AddActivityButton({ date }: AddActivityButtonProps) {
 
       router.refresh();
     } catch (error) {
-      toast.error('Errore nell\'aggiunta dell\'attività');
+      toast.error(t('addError'));
       console.error(error);
     } finally {
       setLoading(false);
@@ -78,21 +83,21 @@ export function AddActivityButton({ date }: AddActivityButtonProps) {
 
   const quickActivities = {
     meal: [
-      { title: 'Colazione', calories: 400 },
-      { title: 'Pranzo', calories: 600 },
-      { title: 'Cena', calories: 600 },
-      { title: 'Spuntino', calories: 200 },
+      { title: t('quickBreakfast'), calories: 400 },
+      { title: t('quickLunch'), calories: 600 },
+      { title: t('quickDinner'), calories: 600 },
+      { title: t('quickSnack'), calories: 200 },
     ],
     workout: [
-      { title: 'Allenamento Forza', calories: -300 },
-      { title: 'Cardio 30min', calories: -250 },
-      { title: 'Camminata', calories: -150 },
-      { title: 'Yoga', calories: -100 },
+      { title: t('quickStrength'), calories: -300 },
+      { title: t('quickCardio'), calories: -250 },
+      { title: t('quickWalk'), calories: -150 },
+      { title: t('quickYoga'), calories: -100 },
     ],
     other: [
-      { title: 'Meditazione', calories: 0 },
-      { title: 'Integratori', calories: 0 },
-      { title: 'Riposo', calories: 0 },
+      { title: t('quickMeditation'), calories: 0 },
+      { title: t('quickSupplements'), calories: 0 },
+      { title: t('quickRest'), calories: 0 },
     ],
   };
 
@@ -146,9 +151,9 @@ export function AddActivityButton({ date }: AddActivityButtonProps) {
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Nuova Attività</DialogTitle>
+          <DialogTitle>{t('newActivity')}</DialogTitle>
           <DialogDescription>
-            Aggiungi un pasto, allenamento o altra attività
+            {t('newActivityDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -158,9 +163,9 @@ export function AddActivityButton({ date }: AddActivityButtonProps) {
             onValueChange={(v) => setActivityType(v as ActivityType)}
           >
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="meal">🍽️ Pasto</TabsTrigger>
-              <TabsTrigger value="workout">💪 Workout</TabsTrigger>
-              <TabsTrigger value="other">📝 Altro</TabsTrigger>
+              <TabsTrigger value="meal">{t('typeMeal')}</TabsTrigger>
+              <TabsTrigger value="workout">{t('typeWorkout')}</TabsTrigger>
+              <TabsTrigger value="other">{t('typeOther')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="meal" className="space-y-3 mt-4">
@@ -219,39 +224,39 @@ export function AddActivityButton({ date }: AddActivityButtonProps) {
           </Tabs>
 
           <div className="space-y-2">
-            <Label htmlFor="title">Titolo *</Label>
+            <Label htmlFor="title">{t('titleLabel')}</Label>
             <Input
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="es. Colazione"
+              placeholder={t('titlePlaceholder')}
               required
               disabled={loading}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="calories">Calorie</Label>
+            <Label htmlFor="calories">{t('caloriesLabel')}</Label>
             <Input
               id="calories"
               type="number"
               value={calories}
               onChange={(e) => setCalories(e.target.value)}
-              placeholder="0 (positivo = consumate, negativo = bruciate)"
+              placeholder={t('caloriesPlaceholder')}
               disabled={loading}
             />
             <p className="text-xs text-muted-foreground">
-              Positivo per calorie consumate, negativo per calorie bruciate
+              {t('caloriesHint')}
             </p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Note (opzionale)</Label>
+            <Label htmlFor="description">{t('notesLabel')}</Label>
             <Input
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="es. Yogurt e frutta"
+              placeholder={t('notesPlaceholder')}
               disabled={loading}
             />
           </div>
@@ -264,10 +269,10 @@ export function AddActivityButton({ date }: AddActivityButtonProps) {
               onClick={() => setOpen(false)}
               disabled={loading}
             >
-              Annulla
+              {tc('cancel')}
             </Button>
             <Button type="submit" className="flex-1" disabled={loading}>
-              {loading ? 'Aggiunta...' : 'Aggiungi'}
+              {loading ? t('adding') : t('add')}
             </Button>
           </div>
         </form>

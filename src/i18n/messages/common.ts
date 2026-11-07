@@ -1,0 +1,40 @@
+import { defineMessages } from '../define';
+
+export const common = defineMessages({
+  en: {
+    appDescription: 'Fitness tracker for activities, calories and hydration.',
+    navToday: 'TODAY',
+    navHistory: 'HISTORY',
+    navStats: 'STATS',
+    navProfile: 'PROFILE',
+    loading: 'Loading…',
+    cancel: 'Cancel',
+    save: 'Save',
+    delete: 'Delete',
+    genericError: 'Something went wrong',
+  },
+  it: {
+    appDescription: 'Fitness tracker per monitorare attività, calorie e idratazione.',
+    navToday: 'OGGI',
+    navHistory: 'STORICO',
+    navStats: 'STATS',
+    navProfile: 'PROFILO',
+    loading: 'Caricamento…',
+    cancel: 'Annulla',
+    save: 'Salva',
+    delete: 'Elimina',
+    genericError: 'Qualcosa è andato storto',
+  },
+  es: {
+    appDescription: 'Seguimiento fitness de actividades, calorías e hidratación.',
+    navToday: 'HOY',
+    navHistory: 'HISTORIAL',
+    navStats: 'ESTADÍSTICAS',
+    navProfile: 'PERFIL',
+    loading: 'Cargando…',
+    cancel: 'Cancelar',
+    save: 'Guardar',
+    delete: 'Eliminar',
+    genericError: 'Algo salió mal',
+  },
+});

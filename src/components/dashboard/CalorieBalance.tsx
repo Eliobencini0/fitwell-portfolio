@@ -1,5 +1,7 @@
 'use client';
 
+import { useT } from '@/i18n/client';
+import { dashboard as messages } from '@/i18n/messages/dashboard';
 interface MacroData {
   carbs: number;      // grammi
   protein: number;    // grammi
@@ -50,12 +52,13 @@ export function CalorieBalance({
   macrosConsumed,
   macrosTarget,
 }: CalorieBalanceProps) {
+  const t = useT(messages);
   const remaining = Math.max(target - consumed + burned, 0);
 
   return (
     <div className="bg-card rounded-3xl p-6 border border-border/50">
       <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-6">
-        Riassunto
+        {t('summary')}
       </h3>
 
       {/* 3 Colonne Responsive */}
@@ -65,7 +68,7 @@ export function CalorieBalance({
           <div className="text-2xl md:text-3xl font-bold text-foreground">
             {consumed}
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Consumate</div>
+          <div className="text-xs text-muted-foreground mt-1">{t('consumed')}</div>
         </div>
 
         {/* RESTANTE */}
@@ -73,7 +76,7 @@ export function CalorieBalance({
           <div className="text-2xl md:text-3xl font-bold text-primary">
             {remaining}
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Restante</div>
+          <div className="text-xs text-muted-foreground mt-1">{t('remaining')}</div>
         </div>
 
         {/* BRUCIATE */}
@@ -81,26 +84,26 @@ export function CalorieBalance({
           <div className="text-2xl md:text-3xl font-bold text-orange-500">
             {burned}
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Bruciate</div>
+          <div className="text-xs text-muted-foreground mt-1">{t('burned')}</div>
         </div>
       </div>
 
       {/* Macro - Layout orizzontale */}
       <div className="flex gap-3">
         <MacroIndicator
-          label="Carboidrati"
+          label={t('carbs')}
           value={macrosConsumed.carbs}
           target={macrosTarget.carbs}
           color="bg-cyan-500"
         />
         <MacroIndicator
-          label="Proteine"
+          label={t('protein')}
           value={macrosConsumed.protein}
           target={macrosTarget.protein}
           color="bg-emerald-500"
         />
         <MacroIndicator
-          label="Grassi"
+          label={t('fats')}
           value={macrosConsumed.fats}
           target={macrosTarget.fats}
           color="bg-amber-500"

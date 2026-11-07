@@ -20,7 +20,7 @@ export async function withActionHandler<T>(
     console.error('Action error:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Si è verificato un errore',
+      error: error instanceof Error ? error.message : 'An error occurred',
     };
   }
 }
@@ -29,20 +29,20 @@ export async function withActionHandler<T>(
  * Success messages for common actions
  */
 export const SUCCESS_MESSAGES = {
-  ACTIVITY_CREATED: 'Attività aggiunta con successo',
-  ACTIVITY_UPDATED: 'Attività aggiornata',
-  ACTIVITY_DELETED: 'Attività eliminata',
-  HYDRATION_UPDATED: 'Idratazione aggiornata',
-  PROFILE_UPDATED: 'Profilo aggiornato',
-  MEASUREMENT_SAVED: 'Misurazione salvata',
+  ACTIVITY_CREATED: 'Activity added successfully',
+  ACTIVITY_UPDATED: 'Activity updated',
+  ACTIVITY_DELETED: 'Activity deleted',
+  HYDRATION_UPDATED: 'Hydration updated',
+  PROFILE_UPDATED: 'Profile updated',
+  MEASUREMENT_SAVED: 'Measurement saved',
 } as const;
 
 /**
  * Error messages for common scenarios
  */
 export const ERROR_MESSAGES = {
-  UNAUTHENTICATED: 'Devi effettuare il login',
-  NETWORK_ERROR: 'Errore di connessione',
-  VALIDATION_ERROR: 'Dati non validi',
-  GENERIC_ERROR: 'Qualcosa è andato storto',
+  UNAUTHENTICATED: 'You must sign in',
+  NETWORK_ERROR: 'Connection error',
+  VALIDATION_ERROR: 'Invalid data',
+  GENERIC_ERROR: 'Something went wrong',
 } as const;

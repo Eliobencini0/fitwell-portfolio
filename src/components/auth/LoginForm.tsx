@@ -8,12 +8,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { loginSchema } from '@/lib/validations';
+import { createLoginSchema } from '@/lib/validations';
+import { useT } from '@/i18n/client';
+import { auth } from '@/i18n/messages/auth';
 import { safeNextPath } from '@/lib/date';
 import { LoadingSpinner } from '@/components/ui/success-checkmark';
 
 export function LoginForm() {
   const router = useRouter();
+  const t = useT(auth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,10 +27,10 @@ export function LoginForm() {
 
     try {
       // Validate input
-      const validation = loginSchema.safeParse({ email, password });
+      const validation = createLoginSchema(t).safeParse({ email, password });
       if (!validation.success) {
         const firstError = validation.error.issues[0];
-        toast.error('Dati non validi', {
+        toast.error(t('invalidData'), {
           description: firstError.message,
         });
         setLoading(false);
@@ -41,20 +44,20 @@ export function LoginForm() {
       });
 
       if (error) {
-        toast.error('Errore di accesso', {
+        toast.error(t('loginError'), {
           description: error.message,
         });
         return;
       }
 
       if (data.user) {
-        toast.success('Accesso effettuato!');
+        toast.success(t('loginSuccess'));
         router.push(safeNextPath(new URLSearchParams(window.location.search).get('next')));
         router.refresh();
       }
     } catch {
-      toast.error('Errore imprevisto', {
-        description: 'Si è verificato un errore durante l\'accesso',
+      toast.error(t('unexpectedError'), {
+        description: t('loginUnexpected'),
       });
     } finally {
       setLoading(false);
@@ -64,11 +67,11 @@ export function LoginForm() {
   return (
     <form onSubmit={handleLogin} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t('email')}</Label>
         <Input
           id="email"
           type="email"
-          placeholder="mario.rossi@esempio.it"
+          placeholder={t('emailPlaceholder')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -78,7 +81,7 @@ export function LoginForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">{t('password')}</Label>
         <Input
           id="password"
           type="password"
@@ -97,13 +100,13 @@ export function LoginForm() {
         disabled={loading}
       >
         {loading && <LoadingSpinner size="sm" />}
-        {loading ? 'Accesso in corso...' : 'Accedi'}
+        {loading ? t('signingIn') : t('signIn')}
       </Button>
 
       <div className="text-center text-sm">
-        <span className="text-muted-foreground">Non hai un account? </span>
+        <span className="text-muted-foreground">{t('noAccount')}</span>
         <Link href="/register" className="text-primary hover:underline">
-          Registrati
+          {t('register')}
         </Link>
       </div>
     </form>

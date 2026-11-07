@@ -1,24 +1,41 @@
 import { z } from 'zod';
 import { isValidYmd } from '@/lib/date';
+import type { AuthKey } from '@/i18n/messages/auth';
 
-const ymdDate = z.string().refine(isValidYmd, 'Formato data non valido');
+const ymdDate = z.string().refine(isValidYmd, 'Invalid date format');
 
-// Auth schemas
+// Auth schemas (English messages, for server-side use)
 export const loginSchema = z.object({
-  email: z.string().email('Email non valida'),
-  password: z.string().min(6, 'Password deve essere almeno 6 caratteri'),
+  email: z.string().email('Invalid email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
 export const registerSchema = z.object({
-  email: z.string().email('Email non valida'),
-  password: z.string().min(6, 'Password deve essere almeno 6 caratteri'),
-  fullName: z.string().min(2, 'Nome deve essere almeno 2 caratteri'),
+  email: z.string().email('Invalid email'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  fullName: z.string().min(2, 'Name must be at least 2 characters'),
 });
+
+// Localised auth schema factories: pass the `t` function from useT(auth)
+type AuthT = (key: AuthKey) => string;
+
+export const createLoginSchema = (t: AuthT) =>
+  z.object({
+    email: z.string().email(t('invalidEmail')),
+    password: z.string().min(6, t('passwordTooShort')),
+  });
+
+export const createRegisterSchema = (t: AuthT) =>
+  z.object({
+    email: z.string().email(t('invalidEmail')),
+    password: z.string().min(6, t('passwordTooShort')),
+    fullName: z.string().min(2, t('nameTooShort')),
+  });
 
 // Activity schemas
 export const activitySchema = z.object({
-  title: z.string().min(1, 'Titolo obbligatorio').max(100, 'Titolo troppo lungo'),
-  description: z.string().max(500, 'Descrizione troppo lunga').optional(),
+  title: z.string().min(1, 'Title is required').max(100, 'Title is too long'),
+  description: z.string().max(500, 'Description is too long').optional(),
   calories: z.number().int().min(-5000).max(5000).optional(),
   carbs: z.number().min(0).max(1000).optional(),
   protein: z.number().min(0).max(500).optional(),
@@ -29,13 +46,13 @@ export const activitySchema = z.object({
 
 // Hydration schema
 export const hydrationSchema = z.object({
-  glasses: z.number().int().min(0, 'Non può essere negativo').max(50, 'Valore troppo alto'),
+  glasses: z.number().int().min(0, 'Cannot be negative').max(50, 'Value is too high'),
   date: ymdDate,
 });
 
 // Profile schema
 export const profileSchema = z.object({
-  fullName: z.string().min(2, 'Nome troppo corto').max(100, 'Nome troppo lungo').optional(),
+  fullName: z.string().min(2, 'Name is too short').max(100, 'Name is too long').optional(),
   dailyCalorieTarget: z.number().int().min(500).max(10000).optional(),
   dailyWaterTarget: z.number().int().min(1).max(50).optional(),
   macroCarbs: z.number().min(0).max(100).optional(),

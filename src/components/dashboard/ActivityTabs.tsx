@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useT } from '@/i18n/client';
+import { dashboard as messages } from '@/i18n/messages/dashboard';
 
 export type ActivityFilter = 'all' | 'meal' | 'workout';
 
@@ -11,12 +13,13 @@ interface ActivityTabsProps {
 }
 
 const tabs = [
-  { id: 'all' as ActivityFilter, label: 'Tutto', icon: '⊞' },
-  { id: 'meal' as ActivityFilter, label: 'Alimentazione', icon: '🍽️' },
-  { id: 'workout' as ActivityFilter, label: 'Attività', icon: '⚡' },
+  { id: 'all' as ActivityFilter, labelKey: 'tabAll' as const, icon: '⊞' },
+  { id: 'meal' as ActivityFilter, labelKey: 'tabMeals' as const, icon: '🍽️' },
+  { id: 'workout' as ActivityFilter, labelKey: 'tabActivities' as const, icon: '⚡' },
 ];
 
 export function ActivityTabs({ onFilterChange, defaultFilter = 'all' }: ActivityTabsProps) {
+  const t = useT(messages);
   const [activeTab, setActiveTab] = useState<ActivityFilter>(defaultFilter);
 
   const handleTabClick = (tabId: ActivityFilter) => {
@@ -41,7 +44,7 @@ export function ActivityTabs({ onFilterChange, defaultFilter = 'all' }: Activity
           )}
         >
           <span className="text-base">{tab.icon}</span>
-          <span>{tab.label}</span>
+          <span>{t(tab.labelKey)}</span>
         </button>
       ))}
     </div>

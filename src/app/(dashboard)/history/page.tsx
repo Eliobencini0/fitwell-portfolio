@@ -5,6 +5,9 @@ import { ActivityCard } from '@/components/history/ActivityCard';
 import { StatsCard } from '@/components/history/StatsCard';
 import { Pagination } from '@/components/history/Pagination';
 import { DailyActivity } from '@/types';
+import { dateLocaleTags } from '@/i18n/config';
+import { getLocale, getT } from '@/i18n/server';
+import { history } from '@/i18n/messages/history';
 
 interface HistoryPageProps {
   searchParams?: Promise<{
@@ -17,6 +20,8 @@ interface HistoryPageProps {
 const ITEMS_PER_PAGE = 20;
 
 export default async function HistoryPage({ searchParams }: HistoryPageProps) {
+  const t = await getT(history);
+  const locale = await getLocale();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -132,9 +137,9 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
     <div className="space-y-6 pb-24">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">📅 Storico Attività</h2>
+        <h2 className="text-2xl font-bold mb-2">{t('title')}</h2>
         <p className="text-muted-foreground text-sm">
-          Cronologia completa delle tue attività
+          {t('subtitle')}
         </p>
       </div>
 
@@ -157,7 +162,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
         <div className="space-y-6">
           {sortedDates.map((date) => {
             const dateObj = new Date(date);
-            const formattedDate = dateObj.toLocaleDateString('it-IT', {
+            const formattedDate = dateObj.toLocaleDateString(dateLocaleTags[locale], {
               weekday: 'long',
               day: 'numeric',
               month: 'long',
@@ -193,11 +198,11 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
       ) : (
         <div className="bg-card rounded-lg p-8 border border-border text-center">
           <div className="text-4xl mb-4">📭</div>
-          <h3 className="text-lg font-semibold mb-2">Nessuna Attività</h3>
+          <h3 className="text-lg font-semibold mb-2">{t('emptyTitle')}</h3>
           <p className="text-sm text-muted-foreground">
-            Non ci sono attività da visualizzare per questo periodo.
+            {t('emptyBody')}
             <br />
-            Vai alla dashboard per aggiungere nuove attività!
+            {t('emptyHint')}
           </p>
         </div>
       )}

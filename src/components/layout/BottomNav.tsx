@@ -3,11 +3,16 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { useT } from '@/i18n/client';
+import { common } from '@/i18n/messages/common';
+import { layout } from '@/i18n/messages/layout';
 
-const navItems = [
+type NavLabel = 'navToday' | 'navHistory' | 'navStats' | 'navPlans';
+
+const navItems: { href: string; label: NavLabel; icon: React.ReactNode }[] = [
   {
     href: '/dashboard',
-    label: 'OGGI',
+    label: 'navToday',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <rect x="3" y="4" width="18" height="18" rx="2" strokeWidth="2" />
@@ -19,7 +24,7 @@ const navItems = [
   },
   {
     href: '/history',
-    label: 'STORICO',
+    label: 'navHistory',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -33,7 +38,7 @@ const navItems = [
   },
   {
     href: '/stats',
-    label: 'STATS',
+    label: 'navStats',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
@@ -47,7 +52,7 @@ const navItems = [
   },
   {
     href: '/plans',
-    label: 'PIANI',
+    label: 'navPlans',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <circle cx="12" cy="12" r="3" strokeWidth="2" />
@@ -64,6 +69,14 @@ const navItems = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const tCommon = useT(common);
+  const tLayout = useT(layout);
+  const labels: Record<NavLabel, string> = {
+    navToday: tCommon('navToday'),
+    navHistory: tCommon('navHistory'),
+    navStats: tCommon('navStats'),
+    navPlans: tLayout('navPlans'),
+  };
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 border-t border-border/50 bg-background/95 backdrop-blur-lg z-50">
@@ -85,7 +98,7 @@ export function BottomNav() {
                 {item.icon}
               </div>
               <span className="text-[10px] font-semibold tracking-wide">
-                {item.label}
+                {labels[item.label]}
               </span>
             </Link>
           );

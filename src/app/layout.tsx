@@ -3,20 +3,27 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { LocaleProvider } from "@/i18n/client";
+import { getLocale } from "@/i18n/server";
+import { translate } from "@/i18n/define";
+import { common } from "@/i18n/messages/common";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Fitwell",
-  description: "Fitness tracker per monitorare attività, calorie e idratazione.",
-  applicationName: "Fitwell",
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  return {
     title: "Fitwell",
-  },
-};
+    description: translate(common, locale, "appDescription"),
+    applicationName: "Fitwell",
+    manifest: "/manifest.json",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: "Fitwell",
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -26,17 +33,21 @@ export const viewport: Viewport = {
   themeColor: "#0a1118",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+
   return (
-    <html lang="it" className="dark">
+    <html lang={locale} className="dark">
       <body className={`${inter.className} antialiased`}>
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
+        <LocaleProvider locale={locale}>
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
+        </LocaleProvider>
         <Toaster />
       </body>
     </html>

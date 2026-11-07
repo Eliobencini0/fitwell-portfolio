@@ -1,6 +1,9 @@
 import { DailyActivity } from '@/types';
 import { CheckCircle2, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { dateLocaleTags } from '@/i18n/config';
+import { getLocale, getT } from '@/i18n/server';
+import { history } from '@/i18n/messages/history';
 
 const activityIcons = {
   meal: '🍽️',
@@ -14,10 +17,12 @@ interface ActivityCardProps {
   activity: DailyActivity;
 }
 
-export function ActivityCard({ activity }: ActivityCardProps) {
+export async function ActivityCard({ activity }: ActivityCardProps) {
+  const t = await getT(history);
+  const locale = await getLocale();
   const icon = activityIcons[activity.activity_type] || '📝';
   const date = new Date(activity.date);
-  const formattedDate = date.toLocaleDateString('it-IT', {
+  const formattedDate = date.toLocaleDateString(dateLocaleTags[locale], {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -76,13 +81,13 @@ export function ActivityCard({ activity }: ActivityCardProps) {
             {showMacros && (
               <div className="flex gap-2 text-xs">
                 {activity.carbs > 0 && (
-                  <span className="text-cyan-500">{activity.carbs}g C</span>
+                  <span className="text-cyan-500">{t('gramsCarbs', { value: activity.carbs })}</span>
                 )}
                 {activity.protein > 0 && (
-                  <span className="text-emerald-500">{activity.protein}g P</span>
+                  <span className="text-emerald-500">{t('gramsProtein', { value: activity.protein })}</span>
                 )}
                 {activity.fats > 0 && (
-                  <span className="text-amber-500">{activity.fats}g F</span>
+                  <span className="text-amber-500">{t('gramsFats', { value: activity.fats })}</span>
                 )}
               </div>
             )}

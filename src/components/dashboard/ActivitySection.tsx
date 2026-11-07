@@ -5,6 +5,8 @@ import { ActivityTabs, type ActivityFilter } from './ActivityTabs';
 import { ActivityListStyled } from './ActivityListStyled';
 import { AddActivityButton } from './AddActivityButton';
 import type { DailyActivity } from '@/types';
+import { useT } from '@/i18n/client';
+import { dashboard as messages } from '@/i18n/messages/dashboard';
 
 interface ActivitySectionProps {
   activities: DailyActivity[];
@@ -12,6 +14,7 @@ interface ActivitySectionProps {
 }
 
 export function ActivitySection({ activities, date }: ActivitySectionProps) {
+  const t = useT(messages);
   const [filter, setFilter] = useState<ActivityFilter>('all');
 
   return (
@@ -23,7 +26,7 @@ export function ActivitySection({ activities, date }: ActivitySectionProps) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-foreground">
-            Lista delle attività
+            {t('activityListTitle')}
           </h3>
           <AddActivityButton date={date} />
         </div>

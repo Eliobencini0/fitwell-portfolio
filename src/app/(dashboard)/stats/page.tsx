@@ -7,8 +7,11 @@ import {
   HydrationChart,
   ProgressStats,
 } from '@/components/stats';
+import { getT } from '@/i18n/server';
+import { stats } from '@/i18n/messages/stats';
 
 export default async function StatsPage() {
+  const t = await getT(stats);
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -169,9 +172,9 @@ export default async function StatsPage() {
     <div className="space-y-6 pb-24">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">📊 Statistiche</h2>
+        <h2 className="text-2xl font-bold mb-2">{t('title')}</h2>
         <p className="text-muted-foreground text-sm">
-          Visualizza i tuoi progressi nel tempo
+          {t('subtitle')}
         </p>
       </div>
 
@@ -206,9 +209,9 @@ export default async function StatsPage() {
       {/* Info Footer */}
       <div className="bg-muted/30 rounded-lg p-4 text-center">
         <p className="text-xs text-muted-foreground">
-          💡 I grafici si aggiornano automaticamente man mano che aggiungi dati.
+          {t('footerLine1')}
           <br />
-          Continua a tracciare le tue attività per vedere i progressi nel tempo!
+          {t('footerLine2')}
         </p>
       </div>
     </div>

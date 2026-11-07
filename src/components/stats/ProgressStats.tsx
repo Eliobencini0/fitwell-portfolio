@@ -1,5 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { TrendingUp, TrendingDown, Activity, Droplet, Flame } from 'lucide-react';
+import { getT } from '@/i18n/server';
+import { stats } from '@/i18n/messages/stats';
 
 interface ProgressStatsProps {
   avgCalories: number;
@@ -10,7 +12,7 @@ interface ProgressStatsProps {
   completionRate: number;
 }
 
-export function ProgressStats({
+export async function ProgressStats({
   avgCalories,
   totalWorkouts,
   avgHydration,
@@ -18,6 +20,8 @@ export function ProgressStats({
   weightChange,
   completionRate,
 }: ProgressStatsProps) {
+  const t = await getT(stats);
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
       {/* Average Calories */}
@@ -25,10 +29,10 @@ export function ProgressStats({
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-2">
             <Flame className="w-4 h-4 text-orange-500" />
-            <div className="text-xs text-muted-foreground">Calorie medie</div>
+            <div className="text-xs text-muted-foreground">{t('avgCalories')}</div>
           </div>
           <div className="text-xl font-bold">{Math.round(avgCalories).toLocaleString()}</div>
-          <div className="text-xs text-muted-foreground">kcal/giorno</div>
+          <div className="text-xs text-muted-foreground">{t('kcalPerDay')}</div>
         </CardContent>
       </Card>
 
@@ -37,10 +41,10 @@ export function ProgressStats({
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-2">
             <Activity className="w-4 h-4 text-primary" />
-            <div className="text-xs text-muted-foreground">Allenamenti</div>
+            <div className="text-xs text-muted-foreground">{t('workouts')}</div>
           </div>
           <div className="text-xl font-bold">{totalWorkouts}</div>
-          <div className="text-xs text-muted-foreground">ultimi 30 gg</div>
+          <div className="text-xs text-muted-foreground">{t('last30d')}</div>
         </CardContent>
       </Card>
 
@@ -49,10 +53,10 @@ export function ProgressStats({
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-2">
             <Droplet className="w-4 h-4 text-cyan-500" />
-            <div className="text-xs text-muted-foreground">Idratazione media</div>
+            <div className="text-xs text-muted-foreground">{t('avgHydration')}</div>
           </div>
           <div className="text-xl font-bold">{avgHydration.toFixed(1)}</div>
-          <div className="text-xs text-muted-foreground">bicchieri/giorno</div>
+          <div className="text-xs text-muted-foreground">{t('glassesPerDay')}</div>
         </CardContent>
       </Card>
 
@@ -62,7 +66,7 @@ export function ProgressStats({
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <div className="text-lg">⚖️</div>
-              <div className="text-xs text-muted-foreground">Peso attuale</div>
+              <div className="text-xs text-muted-foreground">{t('currentWeight')}</div>
             </div>
             <div className="text-xl font-bold">{currentWeight.toFixed(1)}</div>
             <div className="text-xs text-muted-foreground">kg</div>
@@ -80,12 +84,12 @@ export function ProgressStats({
               ) : (
                 <TrendingUp className="w-4 h-4 text-orange-500" />
               )}
-              <div className="text-xs text-muted-foreground">Variazione</div>
+              <div className="text-xs text-muted-foreground">{t('change')}</div>
             </div>
             <div className={`text-xl font-bold ${weightChange < 0 ? 'text-emerald-500' : 'text-orange-500'}`}>
               {weightChange > 0 ? '+' : ''}{weightChange.toFixed(1)}
             </div>
-            <div className="text-xs text-muted-foreground">kg (30 gg)</div>
+            <div className="text-xs text-muted-foreground">{t('kg30d')}</div>
           </CardContent>
         </Card>
       )}
@@ -95,10 +99,10 @@ export function ProgressStats({
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-2">
             <div className="text-lg">✅</div>
-            <div className="text-xs text-muted-foreground">Completamento</div>
+            <div className="text-xs text-muted-foreground">{t('completion')}</div>
           </div>
           <div className="text-xl font-bold">{completionRate}%</div>
-          <div className="text-xs text-muted-foreground">attività (30 gg)</div>
+          <div className="text-xs text-muted-foreground">{t('activities30d')}</div>
         </CardContent>
       </Card>
     </div>
