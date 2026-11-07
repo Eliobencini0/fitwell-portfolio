@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { updateHydration } from '@/lib/actions';
 import { toast } from 'sonner';
+import { useT } from '@/i18n/client';
+import { dashboard as messages } from '@/i18n/messages/dashboard';
 
 interface HydrationTrackerProps {
   glasses: number;
@@ -19,6 +21,7 @@ export function HydrationTracker({
   date,
 }: HydrationTrackerProps) {
   const router = useRouter();
+  const t = useT(messages);
   const [optimisticGlasses, setOptimisticGlasses] = useOptimistic(initialGlasses);
   const [loading, setLoading] = useState(false);
 
@@ -34,7 +37,7 @@ export function HydrationTracker({
       await updateHydration(date, newGlasses);
       router.refresh();
     } catch (error) {
-      toast.error('Errore nell\'aggiornamento');
+      toast.error(t('updateError'));
       console.error(error);
       // Revert optimistic update
       setOptimisticGlasses(initialGlasses);
@@ -50,10 +53,10 @@ export function HydrationTracker({
     <div className="bg-card rounded-lg p-6 border border-border">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-muted-foreground">
-          💧 Idratazione
+          💧 {t('hydration')}
         </h3>
         <div className="text-xs text-muted-foreground">
-          {optimisticGlasses} / {target} bicchieri
+          {optimisticGlasses} / {target} {t('glasses')}
         </div>
       </div>
 
@@ -93,7 +96,7 @@ export function HydrationTracker({
 
         {optimisticGlasses >= target && (
           <div className="text-center text-sm text-success animate-in fade-in">
-            ✅ Obiettivo raggiunto!
+            {t('goalReached')}
           </div>
         )}
       </div>

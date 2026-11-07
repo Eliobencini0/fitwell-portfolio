@@ -2,6 +2,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useT, useLocale } from '@/i18n/client';
+import { dateLocaleTags } from '@/i18n/config';
+import { stats } from '@/i18n/messages/stats';
 
 interface HydrationData {
   date: string;
@@ -14,15 +17,17 @@ interface HydrationChartProps {
 }
 
 export function HydrationChart({ data }: HydrationChartProps) {
+  const t = useT(stats);
+  const locale = useLocale();
   if (!data || data.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">💧 Idratazione (ultimi 14 gg)</CardTitle>
+          <CardTitle className="text-base">{t('hydrationTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground text-sm">
-            Nessun dato disponibile. Traccia l&apos;idratazione per vedere il grafico.
+            {t('hydrationEmpty')}
           </div>
         </CardContent>
       </Card>
@@ -37,9 +42,9 @@ export function HydrationChart({ data }: HydrationChartProps) {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base">💧 Idratazione (ultimi 14 gg)</CardTitle>
+          <CardTitle className="text-base">{t('hydrationTitle')}</CardTitle>
           <div className="text-sm font-medium text-cyan-500">
-            {completionRate}% obiettivo
+            {t('goalPercent', { percent: completionRate })}
           </div>
         </div>
       </CardHeader>
@@ -74,9 +79,9 @@ export function HydrationChart({ data }: HydrationChartProps) {
               }}
               labelFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'long' });
+                return date.toLocaleDateString(dateLocaleTags[locale], { day: 'numeric', month: 'long' });
               }}
-              formatter={(value) => [`${value} bicchieri`, 'Bevuti']}
+              formatter={(value) => [t('glassesTooltip', { count: String(value) }), t('drunk')]}
             />
             <Area
               type="monotone"

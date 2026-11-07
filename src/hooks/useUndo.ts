@@ -2,6 +2,8 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
+import { useT } from '@/i18n/client';
+import { misc } from '@/i18n/messages/misc';
 
 interface UndoState<T> {
   data: T;
@@ -10,6 +12,7 @@ interface UndoState<T> {
 }
 
 export function useUndo<T>(undoDuration = 5000) {
+  const t = useT(misc);
   const [undoState, setUndoState] = useState<UndoState<T> | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const toastIdRef = useRef<string | number | null>(null);
@@ -28,14 +31,14 @@ export function useUndo<T>(undoDuration = 5000) {
       const toastId = toast.success(message, {
         duration: undoDuration,
         action: {
-          label: 'Annulla',
+          label: t('undo'),
           onClick: async () => {
             if (timeoutRef.current) {
               clearTimeout(timeoutRef.current);
             }
             await undoAction();
             setUndoState(null);
-            toast.success('Azione annullata');
+            toast.success(t('undone'));
           },
         },
       });
@@ -58,6 +61,7 @@ export function useUndo<T>(undoDuration = 5000) {
       // Execute the action immediately
       await action();
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [undoDuration]
   );
 

@@ -2,6 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
+import { useLocale } from '@/i18n/client';
+import { dateLocaleTags } from '@/i18n/config';
 
 interface DaySelectorProps {
   currentDate: string;
@@ -9,6 +11,7 @@ interface DaySelectorProps {
 
 export function DaySelector({ currentDate }: DaySelectorProps) {
   const router = useRouter();
+  const locale = useLocale();
 
   const parseDate = (dateString: string) => {
     const [year, month, day] = dateString.split('-').map(Number);
@@ -29,11 +32,15 @@ export function DaySelector({ currentDate }: DaySelectorProps) {
     const monday = new Date(today);
     monday.setUTCDate(today.getUTCDate() - (currentDay === 0 ? 6 : currentDay - 1));
 
-    const weekDays = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
+    const weekdayFormat = new Intl.DateTimeFormat(dateLocaleTags[locale], {
+      weekday: 'narrow',
+      timeZone: 'UTC',
+    });
 
-    return weekDays.map((day, index) => {
+    return Array.from({ length: 7 }, (_, index) => {
       const date = new Date(monday);
       date.setUTCDate(monday.getUTCDate() + index);
+      const day = weekdayFormat.format(date);
       const dateString = formatDate(date);
       const isSelected = dateString === currentDate;
 
@@ -43,7 +50,7 @@ export function DaySelector({ currentDate }: DaySelectorProps) {
         isSelected,
       };
     });
-  }, [currentDate]);
+  }, [currentDate, locale]);
 
   const handleDayClick = (date: string) => {
     router.push(`/dashboard?date=${date}`);

@@ -2,6 +2,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useT, useLocale } from '@/i18n/client';
+import { dateLocaleTags } from '@/i18n/config';
+import { stats } from '@/i18n/messages/stats';
 
 interface CalorieData {
   date: string;
@@ -15,17 +18,19 @@ interface CaloriesChartProps {
 }
 
 export function CaloriesChart({ data }: CaloriesChartProps) {
+  const t = useT(stats);
+  const locale = useLocale();
   if (!data || data.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">🔥 Andamento Calorie</CardTitle>
+          <CardTitle className="text-base">{t('caloriesTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 space-y-3">
             <div className="text-4xl">📈</div>
             <p className="text-sm text-muted-foreground">
-              Nessuna attività tracciata. Vai alla dashboard per iniziare!
+              {t('caloriesEmpty')}
             </p>
           </div>
         </CardContent>
@@ -36,7 +41,7 @@ export function CaloriesChart({ data }: CaloriesChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">🔥 Andamento Calorie (ultimi 7 giorni)</CardTitle>
+        <CardTitle className="text-base">{t('caloriesTitle7')}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={250}>
@@ -63,16 +68,16 @@ export function CaloriesChart({ data }: CaloriesChartProps) {
               }}
               labelFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'long' });
+                return date.toLocaleDateString(dateLocaleTags[locale], { day: 'numeric', month: 'long' });
               }}
             />
             <Legend
               wrapperStyle={{ fontSize: '12px' }}
               formatter={(value) => {
                 const labels: Record<string, string> = {
-                  consumed: 'Consumate',
-                  burned: 'Bruciate',
-                  target: 'Target',
+                  consumed: t('legendConsumed'),
+                  burned: t('legendBurned'),
+                  target: t('legendTarget'),
                 };
                 return labels[value] || value;
               }}

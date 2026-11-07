@@ -1,5 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { getT } from '@/i18n/server';
+import { misc } from '@/i18n/messages/misc';
+import { auth } from '@/i18n/messages/auth';
 
 export default async function Home() {
   // Check if Supabase is configured
@@ -9,6 +12,8 @@ export default async function Home() {
 
   if (!isSupabaseConfigured) {
     // Show a setup page if Supabase is not configured
+    const t = await getT(misc);
+    const tAuth = await getT(auth);
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-background">
         <div className="w-full max-w-2xl space-y-6 text-center">
@@ -16,31 +21,31 @@ export default async function Home() {
             💪
           </div>
           <h1 className="text-3xl font-bold text-foreground">
-            Fitness Tracker
+            {tAuth('appName')}
           </h1>
           <div className="bg-card rounded-lg p-8 border border-border space-y-4 text-left">
             <h2 className="text-xl font-semibold text-primary">
-              🔧 Configurazione Supabase
+              🔧 {t('setupTitle')}
             </h2>
             <p className="text-muted-foreground">
-              Per utilizzare l&apos;app, devi configurare Supabase:
+              {t('setupIntro')}
             </p>
             <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-              <li>Vai su <a href="https://supabase.com/dashboard" target="_blank" className="text-primary hover:underline">supabase.com/dashboard</a></li>
-              <li>Crea un nuovo progetto</li>
-              <li>Vai su Settings → API</li>
-              <li>Copia il Project URL e la anon/public key</li>
-              <li>Aggiorna il file <code className="bg-background px-2 py-1 rounded">.env.local</code></li>
-              <li>Esegui lo script SQL per creare le tabelle (vedi DATABASE_SETUP.md)</li>
-              <li>Riavvia il server di sviluppo</li>
+              <li>{t('setupStep1')} <a href="https://supabase.com/dashboard" target="_blank" className="text-primary hover:underline">supabase.com/dashboard</a></li>
+              <li>{t('setupStep2')}</li>
+              <li>{t('setupStep3')}</li>
+              <li>{t('setupStep4')}</li>
+              <li>{t('setupStep5Before')} <code className="bg-background px-2 py-1 rounded">.env.local</code></li>
+              <li>{t('setupStep6')}</li>
+              <li>{t('setupStep7')}</li>
             </ol>
             <div className="mt-6 p-4 bg-background rounded border border-border">
               <p className="text-xs font-mono text-muted-foreground mb-2">
                 .env.local:
               </p>
               <code className="text-xs">
-                NEXT_PUBLIC_SUPABASE_URL=https://tuoprogetto.supabase.co<br />
-                NEXT_PUBLIC_SUPABASE_ANON_KEY=tua-chiave-qui
+                {t('setupEnvUrl')}<br />
+                {t('setupEnvKey')}
               </code>
             </div>
           </div>

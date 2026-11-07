@@ -5,6 +5,9 @@ import { CalorieBalance } from '@/components/dashboard/CalorieBalance';
 import { HydrationCompact } from '@/components/dashboard/HydrationCompact';
 import { ActivitySection } from '@/components/dashboard/ActivitySection';
 import { isValidYmd, todayYmd } from '@/lib/date';
+import { getLocale, getT } from '@/i18n/server';
+import { dateLocaleTags } from '@/i18n/config';
+import { dashboard as messages } from '@/i18n/messages/dashboard';
 
 interface DashboardPageProps {
   searchParams?: Promise<{ date?: string }>;
@@ -27,22 +30,17 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     (selectedDateObj.getTime() - todayAtMidnight.getTime()) / 86400000
   );
 
-  const dayNames = [
-    'Domenica',
-    'Lunedi',
-    'Martedi',
-    'Mercoledi',
-    'Giovedi',
-    'Venerdi',
-    'Sabato',
-  ];
+  const locale = await getLocale();
+  const t = await getT(messages);
+  const tag = dateLocaleTags[locale];
+  const weekday = selectedDateObj.toLocaleDateString(tag, { weekday: 'long' });
   const dayPrefix =
     dayDiff === 0
-      ? 'Oggi'
+      ? t('today')
       : dayDiff === 1
-      ? 'Domani'
-      : dayNames[selectedDateObj.getDay()];
-  const formattedDate = `${selectedDateObj.getDate()} ${selectedDateObj.toLocaleDateString('it-IT', {
+      ? t('tomorrow')
+      : weekday.charAt(0).toLocaleUpperCase(tag) + weekday.slice(1);
+  const formattedDate = `${selectedDateObj.getDate()} ${selectedDateObj.toLocaleDateString(tag, {
     month: 'short',
   })} ${selectedDateObj.getFullYear()}`;
   const headingText = `${dayPrefix} ${formattedDate}`;

@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
+import { getT } from '@/i18n/server';
+import { plans } from '@/i18n/messages/plans';
 import type {
   UserGoal,
   MealPlan,
@@ -10,12 +12,16 @@ import type {
   Profile
 } from '@/types';
 
-export const metadata: Metadata = {
-  title: 'Piano Personalizzato | Fitwell',
-  description: 'Il tuo programma completo per raggiungere i tuoi obiettivi di fitness'
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT(plans);
+  return {
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+  };
+}
 
 export default async function PlansPage() {
+  const t = await getT(plans);
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -81,10 +87,10 @@ export default async function PlansPage() {
   // Helper function to get goal type label
   const getGoalTypeLabel = (goalType: string) => {
     const labels: Record<string, string> = {
-      weight_loss: 'Perdita Peso',
-      muscle_gain: 'Aumento Massa',
-      maintenance: 'Mantenimento',
-      recomp: 'Ricomposizione',
+      weight_loss: t('goalWeightLoss'),
+      muscle_gain: t('goalMuscleGain'),
+      maintenance: t('goalMaintenance'),
+      recomp: t('goalRecomp'),
     };
     return labels[goalType] || goalType;
   };
@@ -92,9 +98,9 @@ export default async function PlansPage() {
   // Helper function to get priority badge
   const getPriorityBadge = (priority: string) => {
     const badges: Record<string, { label: string; className: string }> = {
-      essential: { label: 'Essenziale', className: 'bg-success/10 text-success' },
-      recommended: { label: 'Consigliato', className: 'bg-primary/10 text-primary' },
-      optional: { label: 'Opzionale', className: 'bg-muted text-muted-foreground' },
+      essential: { label: t('priorityEssential'), className: 'bg-success/10 text-success' },
+      recommended: { label: t('priorityRecommended'), className: 'bg-primary/10 text-primary' },
+      optional: { label: t('priorityOptional'), className: 'bg-muted text-muted-foreground' },
     };
     return badges[priority] || badges.optional;
   };
@@ -103,9 +109,9 @@ export default async function PlansPage() {
     <div className="space-y-6 pb-24">
       {/* Page Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-2">Piano Personalizzato</h2>
+        <h2 className="text-2xl font-bold mb-2">{t('title')}</h2>
         <p className="text-muted-foreground">
-          Il tuo programma completo per raggiungere i tuoi obiettivi
+          {t('subtitle')}
         </p>
       </div>
 
@@ -114,23 +120,23 @@ export default async function PlansPage() {
         <div className="bg-card rounded-lg p-6 border border-border">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-2xl">
-              <span role="img" aria-label="Obiettivo">🎯</span>
+              <span role="img" aria-label={t('goalAlt')}>🎯</span>
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold mb-1">Obiettivo Attuale</h3>
+              <h3 className="font-semibold mb-1">{t('currentGoal')}</h3>
               <p className="text-sm text-muted-foreground mb-3">
                 {getGoalTypeLabel(goal.goal_type)}
               </p>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 {goal.target_weight && (
                   <div>
-                    <span className="text-muted-foreground">Peso target:</span>
+                    <span className="text-muted-foreground">{t('targetWeight')}</span>
                     <span className="ml-2 font-medium">{goal.target_weight} kg</span>
                   </div>
                 )}
                 {goal.weekly_weight_change && (
                   <div>
-                    <span className="text-muted-foreground">Obiettivo settimanale:</span>
+                    <span className="text-muted-foreground">{t('weeklyGoal')}</span>
                     <span className="ml-2 font-medium">
                       {goal.weekly_weight_change > 0 ? '+' : ''}
                       {goal.weekly_weight_change} kg
@@ -149,11 +155,11 @@ export default async function PlansPage() {
       ) : (
         <div className="bg-card rounded-lg p-6 border border-border text-center">
           <div className="text-4xl mb-4">
-            <span role="img" aria-label="Obiettivo">🎯</span>
+            <span role="img" aria-label={t('goalAlt')}>🎯</span>
           </div>
-          <h3 className="font-semibold mb-2">Nessun Obiettivo Attivo</h3>
+          <h3 className="font-semibold mb-2">{t('noGoalTitle')}</h3>
           <p className="text-sm text-muted-foreground">
-            Configura il tuo obiettivo per iniziare
+            {t('noGoalBody')}
           </p>
         </div>
       )}
@@ -162,31 +168,31 @@ export default async function PlansPage() {
       {latestMeasurement && (
         <div className="bg-card rounded-lg p-6 border border-border">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
-            <span role="img" aria-label="Statistiche" className="text-xl">📊</span>
-            Statistiche Attuali
+            <span role="img" aria-label={t('currentStatsAlt')} className="text-xl">📊</span>
+            {t('currentStats')}
           </h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             {latestMeasurement.weight && (
               <div>
-                <div className="text-muted-foreground mb-1">Peso</div>
+                <div className="text-muted-foreground mb-1">{t('weight')}</div>
                 <div className="text-lg font-semibold">{latestMeasurement.weight} kg</div>
               </div>
             )}
             {latestMeasurement.body_fat_percentage && (
               <div>
-                <div className="text-muted-foreground mb-1">Grasso Corporeo</div>
+                <div className="text-muted-foreground mb-1">{t('bodyFat')}</div>
                 <div className="text-lg font-semibold">{latestMeasurement.body_fat_percentage}%</div>
               </div>
             )}
             {latestMeasurement.muscle_mass && (
               <div>
-                <div className="text-muted-foreground mb-1">Massa Muscolare</div>
+                <div className="text-muted-foreground mb-1">{t('muscleMass')}</div>
                 <div className="text-lg font-semibold">{latestMeasurement.muscle_mass} kg</div>
               </div>
             )}
             {latestMeasurement.visceral_fat && (
               <div>
-                <div className="text-muted-foreground mb-1">Grasso Viscerale</div>
+                <div className="text-muted-foreground mb-1">{t('visceralFat')}</div>
                 <div className="text-lg font-semibold">{latestMeasurement.visceral_fat}</div>
               </div>
             )}
@@ -199,13 +205,13 @@ export default async function PlansPage() {
         <div className="bg-card rounded-lg p-6 border border-border">
           <div className="flex items-start gap-4 mb-4">
             <div className="w-12 h-12 rounded-lg bg-success/10 flex items-center justify-center text-2xl">
-              <span role="img" aria-label="Piano pasti">🥗</span>
+              <span role="img" aria-label={t('mealPlanAlt')}>🥗</span>
             </div>
             <div className="flex-1">
               <h3 className="font-semibold mb-1">{mealPlan.plan_name}</h3>
               {mealPlan.fasting_protocol && (
                 <p className="text-sm text-muted-foreground">
-                  Protocollo: {mealPlan.fasting_protocol}
+                  {t('protocol', { protocol: mealPlan.fasting_protocol })}
                 </p>
               )}
             </div>
@@ -231,11 +237,11 @@ export default async function PlansPage() {
       ) : (
         <div className="bg-card rounded-lg p-6 border border-border text-center">
           <div className="text-4xl mb-4">
-            <span role="img" aria-label="Piano pasti">🥗</span>
+            <span role="img" aria-label={t('mealPlanAlt')}>🥗</span>
           </div>
-          <h3 className="font-semibold mb-2">Nessun Piano Alimentare</h3>
+          <h3 className="font-semibold mb-2">{t('noMealTitle')}</h3>
           <p className="text-sm text-muted-foreground">
-            Crea il tuo piano alimentare personalizzato
+            {t('noMealBody')}
           </p>
         </div>
       )}
@@ -245,12 +251,12 @@ export default async function PlansPage() {
         <div className="bg-card rounded-lg p-6 border border-border">
           <div className="flex items-start gap-4 mb-4">
             <div className="w-12 h-12 rounded-lg bg-warning/10 flex items-center justify-center text-2xl">
-              <span role="img" aria-label="Allenamento">💪</span>
+              <span role="img" aria-label={t('workoutAlt')}>💪</span>
             </div>
             <div className="flex-1">
               <h3 className="font-semibold mb-1">{workoutPlan.plan_name}</h3>
               <p className="text-sm text-muted-foreground">
-                {workoutPlan.weekly_schedule?.length || 0} allenamenti settimanali
+                {t('workoutsPerWeek', { count: workoutPlan.weekly_schedule?.length || 0 })}
               </p>
             </div>
           </div>
@@ -266,7 +272,7 @@ export default async function PlansPage() {
                   <div className="text-right">
                     <div className="text-sm font-medium text-primary">{day.time}</div>
                     <div className="text-xs text-muted-foreground">
-                      {day.duration} min • {day.type}
+                      {t('minutes', { count: day.duration })} • {day.type}
                     </div>
                   </div>
                 </div>
@@ -277,11 +283,11 @@ export default async function PlansPage() {
       ) : (
         <div className="bg-card rounded-lg p-6 border border-border text-center">
           <div className="text-4xl mb-4">
-            <span role="img" aria-label="Allenamento">💪</span>
+            <span role="img" aria-label={t('workoutAlt')}>💪</span>
           </div>
-          <h3 className="font-semibold mb-2">Nessun Piano di Allenamento</h3>
+          <h3 className="font-semibold mb-2">{t('noWorkoutTitle')}</h3>
           <p className="text-sm text-muted-foreground">
-            Crea il tuo programma di allenamento
+            {t('noWorkoutBody')}
           </p>
         </div>
       )}
@@ -291,12 +297,14 @@ export default async function PlansPage() {
         <div className="bg-card rounded-lg p-6 border border-border">
           <div className="flex items-start gap-4 mb-4">
             <div className="w-12 h-12 rounded-lg bg-info/10 flex items-center justify-center text-2xl">
-              <span role="img" aria-label="Integratori">💊</span>
+              <span role="img" aria-label={t('supplementsAlt')}>💊</span>
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold mb-1">Stack Integratori</h3>
+              <h3 className="font-semibold mb-1">{t('supplementStack')}</h3>
               <p className="text-sm text-muted-foreground">
-                {supplements.length} {supplements.length === 1 ? 'integratore' : 'integratori'} attivi
+                {supplements.length === 1
+                  ? t('activeSupplementsOne', { count: supplements.length })
+                  : t('activeSupplementsMany', { count: supplements.length })}
               </p>
             </div>
           </div>
@@ -323,11 +331,11 @@ export default async function PlansPage() {
       ) : (
         <div className="bg-card rounded-lg p-6 border border-border text-center">
           <div className="text-4xl mb-4">
-            <span role="img" aria-label="Integratori">💊</span>
+            <span role="img" aria-label={t('supplementsAlt')}>💊</span>
           </div>
-          <h3 className="font-semibold mb-2">Nessun Integratore</h3>
+          <h3 className="font-semibold mb-2">{t('noSupplementsTitle')}</h3>
           <p className="text-sm text-muted-foreground">
-            Aggiungi integratori al tuo stack
+            {t('noSupplementsBody')}
           </p>
         </div>
       )}
@@ -336,36 +344,36 @@ export default async function PlansPage() {
       {profile && (
         <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-6 border border-primary/20">
           <h3 className="font-semibold mb-4 flex items-center gap-2">
-            <span role="img" aria-label="Target calorie" className="text-xl">🔥</span>
-            Target Giornaliero
+            <span role="img" aria-label={t('calorieTargetAlt')} className="text-xl">🔥</span>
+            {t('dailyTarget')}
           </h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <div className="text-muted-foreground mb-1">Calorie</div>
+              <div className="text-muted-foreground mb-1">{t('calories')}</div>
               <div className="text-lg font-semibold text-primary">
                 {profile.daily_calorie_target} kcal
               </div>
             </div>
             <div>
-              <div className="text-muted-foreground mb-1">Acqua</div>
+              <div className="text-muted-foreground mb-1">{t('water')}</div>
               <div className="text-lg font-semibold text-primary">
-                {profile.daily_water_target} bicchieri
+                {t('glasses', { count: profile.daily_water_target })}
               </div>
             </div>
             <div>
-              <div className="text-muted-foreground mb-1">Carboidrati</div>
+              <div className="text-muted-foreground mb-1">{t('carbs')}</div>
               <div className="text-sm font-medium">
                 {profile.macro_carbs_percentage}%
               </div>
             </div>
             <div>
-              <div className="text-muted-foreground mb-1">Proteine</div>
+              <div className="text-muted-foreground mb-1">{t('protein')}</div>
               <div className="text-sm font-medium">
                 {profile.macro_protein_percentage}%
               </div>
             </div>
             <div>
-              <div className="text-muted-foreground mb-1">Grassi</div>
+              <div className="text-muted-foreground mb-1">{t('fats')}</div>
               <div className="text-sm font-medium">
                 {profile.macro_fats_percentage}%
               </div>

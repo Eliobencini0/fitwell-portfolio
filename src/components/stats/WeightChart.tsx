@@ -3,6 +3,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingDown, TrendingUp } from 'lucide-react';
+import { useT, useLocale } from '@/i18n/client';
+import { dateLocaleTags } from '@/i18n/config';
+import { stats } from '@/i18n/messages/stats';
 
 interface WeightData {
   date: string;
@@ -15,19 +18,21 @@ interface WeightChartProps {
 }
 
 export function WeightChart({ data, targetWeight }: WeightChartProps) {
+  const t = useT(stats);
+  const locale = useLocale();
   if (!data || data.length === 0) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            ⚖️ Andamento Peso
+            {t('weightTitle')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 space-y-3">
             <div className="text-4xl">📊</div>
             <p className="text-sm text-muted-foreground">
-              Nessuna misurazione del peso. Inizia a tracciare per vedere il tuo progresso!
+              {t('weightEmpty')}
             </p>
           </div>
         </CardContent>
@@ -45,7 +50,7 @@ export function WeightChart({ data, targetWeight }: WeightChartProps) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
-            ⚖️ Andamento Peso
+            {t('weightTitle')}
           </CardTitle>
           {weightChange !== 0 && (
             <div className={`flex items-center gap-1 text-sm font-medium ${isLoss ? 'text-emerald-500' : 'text-orange-500'}`}>
@@ -81,9 +86,9 @@ export function WeightChart({ data, targetWeight }: WeightChartProps) {
               }}
               labelFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'long' });
+                return date.toLocaleDateString(dateLocaleTags[locale], { day: 'numeric', month: 'long' });
               }}
-              formatter={(value) => [`${Number(value).toFixed(1)} kg`, 'Peso']}
+              formatter={(value) => [`${Number(value).toFixed(1)} kg`, t('weightLabel')]}
             />
             <Line
               type="monotone"
@@ -107,7 +112,7 @@ export function WeightChart({ data, targetWeight }: WeightChartProps) {
         </ResponsiveContainer>
         {targetWeight && (
           <div className="text-xs text-muted-foreground text-center mt-2">
-            Linea tratteggiata = Peso target ({targetWeight} kg)
+            {t('weightTargetLine', { weight: targetWeight })}
           </div>
         )}
       </CardContent>

@@ -8,11 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { registerSchema } from '@/lib/validations';
+import { createRegisterSchema } from '@/lib/validations';
+import { useT } from '@/i18n/client';
+import { auth } from '@/i18n/messages/auth';
 import { LoadingSpinner } from '@/components/ui/success-checkmark';
 
 export function RegisterForm() {
   const router = useRouter();
+  const t = useT(auth);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,17 +26,17 @@ export function RegisterForm() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      toast.error('Errore', {
-        description: 'Le password non coincidono',
+      toast.error(t('error'), {
+        description: t('passwordsMismatch'),
       });
       return;
     }
 
     // Validate input
-    const validation = registerSchema.safeParse({ email, password, fullName });
+    const validation = createRegisterSchema(t).safeParse({ email, password, fullName });
     if (!validation.success) {
       const firstError = validation.error.issues[0];
-      toast.error('Dati non validi', {
+      toast.error(t('invalidData'), {
         description: firstError.message,
       });
       return;
@@ -54,15 +57,15 @@ export function RegisterForm() {
       });
 
       if (error) {
-        toast.error('Errore di registrazione', {
+        toast.error(t('registerError'), {
           description: error.message,
         });
         return;
       }
 
       if (data.user) {
-        toast.success('Registrazione completata!', {
-          description: 'Verifica la tua email per confermare l\'account',
+        toast.success(t('registerSuccess'), {
+          description: t('registerSuccessDesc'),
         });
 
         // Se l'email confirmation è disabilitata, l'utente viene loggato automaticamente
@@ -75,8 +78,8 @@ export function RegisterForm() {
         }
       }
     } catch {
-      toast.error('Errore imprevisto', {
-        description: 'Si è verificato un errore durante la registrazione',
+      toast.error(t('unexpectedError'), {
+        description: t('registerUnexpected'),
       });
     } finally {
       setLoading(false);
@@ -86,11 +89,11 @@ export function RegisterForm() {
   return (
     <form onSubmit={handleRegister} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="fullName">Nome completo</Label>
+        <Label htmlFor="fullName">{t('fullName')}</Label>
         <Input
           id="fullName"
           type="text"
-          placeholder="Mario Rossi"
+          placeholder={t('fullNamePlaceholder')}
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           required
@@ -100,11 +103,11 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">{t('email')}</Label>
         <Input
           id="email"
           type="email"
-          placeholder="mario.rossi@esempio.it"
+          placeholder={t('emailPlaceholder')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -114,7 +117,7 @@ export function RegisterForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">{t('password')}</Label>
         <Input
           id="password"
           type="password"
@@ -127,12 +130,12 @@ export function RegisterForm() {
           minLength={6}
         />
         <p className="text-xs text-muted-foreground">
-          Minimo 6 caratteri
+          {t('passwordMin')}
         </p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Conferma password</Label>
+        <Label htmlFor="confirmPassword">{t('confirmPassword')}</Label>
         <Input
           id="confirmPassword"
           type="password"
@@ -152,13 +155,13 @@ export function RegisterForm() {
         disabled={loading}
       >
         {loading && <LoadingSpinner size="sm" />}
-        {loading ? 'Registrazione in corso...' : 'Registrati'}
+        {loading ? t('registering') : t('register')}
       </Button>
 
       <div className="text-center text-sm">
-        <span className="text-muted-foreground">Hai già un account? </span>
+        <span className="text-muted-foreground">{t('haveAccount')}</span>
         <Link href="/login" className="text-primary hover:underline">
-          Accedi
+          {t('signIn')}
         </Link>
       </div>
     </form>
