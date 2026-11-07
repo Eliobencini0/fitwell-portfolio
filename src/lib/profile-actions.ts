@@ -37,6 +37,5 @@ export async function updateProfileDetails(input: ProfileDetailsInput) {
 
   revalidatePath('/profile');
   revalidatePath('/dashboard');
-  revalidatePath('/stats');
   revalidatePath('/plans');
 }

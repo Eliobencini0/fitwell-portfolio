@@ -7,7 +7,7 @@ import { useT } from '@/i18n/client';
 import { common } from '@/i18n/messages/common';
 import { layout } from '@/i18n/messages/layout';
 
-type NavLabel = 'navToday' | 'navHistory' | 'navStats' | 'navPlans';
+type NavLabel = 'navToday' | 'navHistory' | 'navChat' | 'navPlans';
 
 const navItems: { href: string; label: NavLabel; icon: React.ReactNode }[] = [
   {
@@ -37,15 +37,15 @@ const navItems: { href: string; label: NavLabel; icon: React.ReactNode }[] = [
     ),
   },
   {
-    href: '/stats',
-    label: 'navStats',
+    href: '/chat',
+    label: 'navChat',
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth="2"
-          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+          d="M8 10h8M8 14h5m-9 6l1.5-3.5A8 8 0 1112 20H4z"
         />
       </svg>
     ),
@@ -74,7 +74,7 @@ export function BottomNav() {
   const labels: Record<NavLabel, string> = {
     navToday: tCommon('navToday'),
     navHistory: tCommon('navHistory'),
-    navStats: tCommon('navStats'),
+    navChat: tCommon('navChat'),
     navPlans: tLayout('navPlans'),
   };
 
