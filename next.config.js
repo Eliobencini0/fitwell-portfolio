@@ -10,6 +10,10 @@ const withPWA = require("next-pwa")({
 const nextConfig = {
   reactStrictMode: true,
   turbopack: {},
+  async redirects() {
+    // The Stats page was replaced by the Chat tab; old bookmarks and home-screen links still point to it.
+    return [{ source: '/stats', destination: '/chat', permanent: true }];
+  },
 };
 
 module.exports = withPWA(nextConfig);
