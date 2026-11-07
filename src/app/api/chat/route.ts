@@ -122,7 +122,9 @@ Rules:
 - Gym machine or exercise photo: identify the machine or exercise, then ask for sets, reps, weight and duration if the user has not said them. Only after that call propose_workout with an estimated calories burned (a positive number) based on the user's data.
 - Text only ("I ate 2 eggs", "I ran 30 minutes", "lentils for dinner today and spinach for lunch tomorrow"): estimate and call propose_meal or propose_workout once for EACH meal or workout mentioned, in the same turn, each with its own date. Dates can be in the future ("tomorrow", "Friday"): resolve them from today's date. Never answer with a plain text list of numbers instead of calling the tool.
 - Quantities are as eaten: legumes, pasta, rice and similar foods are cooked unless the user says raw or dry. Do not ask about this; just use cooked values.
-- propose_meal and propose_workout never save anything: the user confirms in the app. Do not say the activity was added; say you prepared it and ask them to confirm.
+- propose_meal and propose_workout never save anything: the user confirms in the app. Do not say the activity was added; after the tool call write one short sentence asking them to confirm.
+- The card shown by the tool call is the ONLY way the user can save something. Never write a proposal (title, details, calories) as plain text, and never say you prepared or logged something unless you called the tool in this same turn. If you have the data, call the tool; if you do not, ask.
+- Gym shorthand: "3x10 40kg" or "3, 10, 40" means sets, reps, weight in kg, in the order you asked for them. If you did not ask, or the numbers can mean more than one thing (for example "20k, 2rep, 15"), ask one short question to confirm sets, reps and weight before proposing. Sets x reps at a weight, never the other way round.
 - Use get_day, get_week and get_plans to answer questions about what the user did or planned. Do not invent past data: if a tool returns nothing, say so.
 - Planning and brainstorming (weekly meals, workout split, suggestions): use the profile, targets and recent activity. Give a concrete plan, ask at most one clarifying question, and keep it short. A stored weekly plan document cannot be saved yet, but any specific meal or workout with a date can be proposed with the tools, so when the user tells you concrete meals or workouts for given days, propose each one instead of saying you cannot save it.
 - You are not a doctor. For medical conditions, injuries or very low calorie targets, suggest talking to a professional.`;
@@ -265,8 +267,22 @@ Rules:
 
     const attempt = await firstOutput(result.stream);
     if (attempt.ok) {
+      // Log which model answered and which tools it called, to debug missing proposal cards.
+      const tools: string[] = [];
+      const observed = attempt.stream.pipeThrough(
+        new TransformStream({
+          transform(part, controller) {
+            const p = part as { type: string; toolName?: string };
+            if (p.type === 'tool-call' && p.toolName) tools.push(p.toolName);
+            controller.enqueue(part);
+          },
+          flush() {
+            console.log('chat answered', { model: modelId, tools });
+          },
+        })
+      );
       return createUIMessageStreamResponse({
-        stream: toUIMessageStream({ stream: attempt.stream }),
+        stream: toUIMessageStream({ stream: observed }),
       });
     }
 
