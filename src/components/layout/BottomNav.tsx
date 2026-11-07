@@ -6,10 +6,11 @@ import { cn } from '@/lib/utils';
 import { useT } from '@/i18n/client';
 import { common } from '@/i18n/messages/common';
 import { layout } from '@/i18n/messages/layout';
+import { features } from '@/lib/features';
 
 type NavLabel = 'navToday' | 'navHistory' | 'navChat' | 'navPlans';
 
-const navItems: { href: string; label: NavLabel; icon: React.ReactNode }[] = [
+const allNavItems: { href: string; label: NavLabel; icon: React.ReactNode }[] = [
   {
     href: '/dashboard',
     label: 'navToday',
@@ -66,6 +67,8 @@ const navItems: { href: string; label: NavLabel; icon: React.ReactNode }[] = [
     ),
   },
 ];
+
+const navItems = allNavItems.filter((item) => item.href !== '/plans' || features.plans);
 
 export function BottomNav() {
   const pathname = usePathname();
