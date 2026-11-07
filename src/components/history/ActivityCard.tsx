@@ -1,8 +1,16 @@
+'use client';
+
+import { useOptimistic, startTransition, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { DailyActivity } from '@/types';
 import { CheckCircle2, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { dateLocaleTags } from '@/i18n/config';
-import { getLocale, getT } from '@/i18n/server';
+import { useLocale, useT } from '@/i18n/client';
+import { toggleActivity } from '@/lib/actions';
+import { EditActivityDialog } from '@/components/history/EditActivityDialog';
+import { activityEdit } from '@/i18n/messages/activity-edit';
 import { history } from '@/i18n/messages/history';
 
 const activityIcons = {
@@ -17,9 +25,28 @@ interface ActivityCardProps {
   activity: DailyActivity;
 }
 
-export async function ActivityCard({ activity }: ActivityCardProps) {
-  const t = await getT(history);
-  const locale = await getLocale();
+export function ActivityCard({ activity }: ActivityCardProps) {
+  const t = useT(history);
+  const te = useT(activityEdit);
+  const locale = useLocale();
+  const router = useRouter();
+  const [editing, setEditing] = useState(false);
+  const [completed, setCompleted] = useOptimistic(activity.completed);
+
+  const handleToggle = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    const next = !completed;
+    startTransition(async () => {
+      setCompleted(next);
+      try {
+        await toggleActivity(activity.id, next);
+        router.refresh();
+      } catch (error) {
+        console.error(error);
+        toast.error(te('error'));
+      }
+    });
+  };
   const icon = activityIcons[activity.activity_type] || '📝';
   const date = new Date(activity.date);
   const formattedDate = date.toLocaleDateString(dateLocaleTags[locale], {
@@ -32,10 +59,22 @@ export async function ActivityCard({ activity }: ActivityCardProps) {
     (activity.carbs > 0 || activity.protein > 0 || activity.fats > 0);
 
   return (
-    <div className={cn(
-      "bg-card rounded-lg p-4 border border-border transition-all hover:border-primary/50",
-      !activity.completed && "opacity-60"
-    )}>
+    <>
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => setEditing(true)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setEditing(true);
+        }
+      }}
+      className={cn(
+        "bg-card rounded-lg p-4 border border-border transition-all hover:border-primary/50 cursor-pointer",
+        !completed && "opacity-60"
+      )}
+    >
       <div className="flex items-start gap-3">
         {/* Icon */}
         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -51,13 +90,19 @@ export async function ActivityCard({ activity }: ActivityCardProps) {
             </div>
 
             {/* Completion Status */}
-            <div className="shrink-0">
-              {activity.completed ? (
+            <button
+              type="button"
+              onClick={handleToggle}
+              aria-label={completed ? te('markTodo') : te('markDone')}
+              aria-pressed={completed}
+              className="shrink-0 -m-2 p-2"
+            >
+              {completed ? (
                 <CheckCircle2 className="w-5 h-5 text-primary" />
               ) : (
                 <Circle className="w-5 h-5 text-muted-foreground" />
               )}
-            </div>
+            </button>
           </div>
 
           {/* Description */}
@@ -95,5 +140,9 @@ export async function ActivityCard({ activity }: ActivityCardProps) {
         </div>
       </div>
     </div>
+    {editing && (
+      <EditActivityDialog activity={activity} open onOpenChange={setEditing} />
+    )}
+    </>
   );
 }

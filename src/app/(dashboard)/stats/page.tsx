@@ -47,7 +47,7 @@ export default async function StatsPage() {
     // Weight measurements (last 90 days)
     supabase
       .from('body_measurements')
-      .select('date, weight_kg')
+      .select('date, weight')
       .eq('user_id', user.id)
       .gte('date', last90Days.toISOString().split('T')[0])
       .order('date', { ascending: true }),
@@ -94,7 +94,7 @@ export default async function StatsPage() {
   // Process weight data
   const weightChartData = weightData.data?.map((m) => ({
     date: m.date,
-    weight: m.weight_kg,
+    weight: m.weight,
   })) || [];
 
   // Process calories data (group by date)

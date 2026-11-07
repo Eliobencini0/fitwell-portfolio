@@ -76,6 +76,32 @@ export async function createActivity(data: {
   refresh();
 }
 
+export async function updateActivity(activityId: string, data: z.input<typeof activitySchema>) {
+  const id = idSchema.parse(activityId);
+  const input = activitySchema.parse(data);
+  const { supabase, user } = await requireUser();
+
+  const isMeal = input.activity_type === 'meal';
+  const { error } = await supabase
+    .from('daily_activities')
+    .update({
+      title: input.title,
+      description: input.description || null,
+      activity_type: input.activity_type,
+      date: input.date,
+      calories: input.calories ?? 0,
+      carbs: isMeal ? input.carbs ?? 0 : 0,
+      protein: isMeal ? input.protein ?? 0 : 0,
+      fats: isMeal ? input.fats ?? 0 : 0,
+    })
+    .eq('id', id)
+    .eq('user_id', user.id);
+
+  if (error) throw error;
+
+  refresh();
+}
+
 export async function deleteActivity(activityId: string) {
   const id = idSchema.parse(activityId);
   const { supabase, user } = await requireUser();
