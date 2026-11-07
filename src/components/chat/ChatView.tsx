@@ -158,7 +158,9 @@ export function ChatView() {
 
       {messages.length === 0 && (
         <div className="space-y-4 pt-6 text-center">
-          <div className="text-5xl">🤖</div>
+          <div className="text-5xl" aria-hidden="true">
+            <span className="animate-lift-twice">🏋️</span>
+          </div>
           <p className="mx-auto max-w-xs text-sm text-muted-foreground">{t('intro')}</p>
           <div className="flex flex-wrap justify-center gap-2">
             {suggestions.map((item) => (

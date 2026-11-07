@@ -37,6 +37,7 @@ export const chat = defineMessages({
     grams: '{value} g',
     minutes: '{value} min',
     estimate: 'Estimate: the real values can differ.',
+    plannedNote: 'Future date: it is added as planned and counts once you mark it done.',
   },
   it: {
     title: 'Chat',
@@ -74,6 +75,7 @@ export const chat = defineMessages({
     grams: '{value} g',
     minutes: '{value} min',
     estimate: 'Stima: i valori reali possono differire.',
+    plannedNote: 'Data futura: viene aggiunto come previsto e conta quando lo segni come fatto.',
   },
   es: {
     title: 'Chat',
@@ -111,5 +113,6 @@ export const chat = defineMessages({
     grams: '{value} g',
     minutes: '{value} min',
     estimate: 'Estimación: los valores reales pueden variar.',
+    plannedNote: 'Fecha futura: se añade como planificado y cuenta cuando lo marques como hecho.',
   },
 });

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useT } from '@/i18n/client';
 import { chat } from '@/i18n/messages/chat';
 import { createActivity } from '@/lib/actions';
+import { todayYmd } from '@/lib/date';
 
 export type Proposal =
   | {
@@ -38,6 +39,8 @@ interface ProposalCardProps {
 export function ProposalCard({ proposal, status, onResolve }: ProposalCardProps) {
   const t = useT(chat);
   const [saving, setSaving] = useState(false);
+  // Meals and workouts dated in the future are added as planned, not as done.
+  const planned = proposal.date > todayYmd();
 
   const add = async () => {
     setSaving(true);
@@ -52,7 +55,7 @@ export function ProposalCard({ proposal, status, onResolve }: ProposalCardProps)
           carbs: proposal.carbs,
           protein: proposal.protein,
           fats: proposal.fats,
-          completed: true,
+          completed: !planned,
         });
       } else {
         const description = [
@@ -67,7 +70,7 @@ export function ProposalCard({ proposal, status, onResolve }: ProposalCardProps)
           description: description || undefined,
           activity_type: 'workout',
           calories: -proposal.caloriesBurned,
-          completed: true,
+          completed: !planned,
         });
       }
       toast.success(t('added'));
@@ -128,6 +131,9 @@ export function ProposalCard({ proposal, status, onResolve }: ProposalCardProps)
       )}
 
       <p className="text-[11px] text-muted-foreground">{t('estimate')}</p>
+      {planned && !status && (
+        <p className="text-[11px] text-muted-foreground">{t('plannedNote')}</p>
+      )}
 
       {status === 'added' && <p className="text-xs font-medium text-primary">{t('added')}</p>}
       {status === 'dismissed' && <p className="text-xs text-muted-foreground">{t('dismissed')}</p>}
