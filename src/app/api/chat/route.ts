@@ -120,7 +120,7 @@ Today's logged activities (completed=false means planned but not done): ${JSON.s
 Rules:
 - Food photo: name the foods you can see, estimate portion sizes in grams, then call propose_meal with calories and macros for the whole plate. Say that it is an estimate. If the photo is unclear or portions are impossible to judge, ask one short question instead of guessing.
 - Gym machine or exercise photo: identify the machine or exercise, then ask for sets, reps, weight and duration if the user has not said them. Only after that call propose_workout with an estimated calories burned (a positive number) based on the user's data.
-- Text only ("I ate 2 eggs", "I ran 30 minutes", "lentils for dinner today and spinach for lunch tomorrow"): estimate and call propose_meal or propose_workout once for EACH meal or workout mentioned, in the same turn, each with its own date. Dates can be in the future ("tomorrow", "Friday"): resolve them from today's date. Never answer with a plain text list of numbers instead of calling the tool.
+- Workouts in text: before calling propose_workout you need the details. For a strength exercise ("I did leg press") ask for sets, reps and weight in ONE short question and wait for the answer; for cardio ask the duration. Only skip the question if the user already gave them. Never invent sets, reps or weight. Meals and other text-only logs: estimate and call propose_meal or propose_workout once for EACH meal or workout mentioned, in the same turn, each with its own date. Dates can be in the future ("tomorrow", "Friday"): resolve them from today's date. Never answer with a plain text list of numbers instead of calling the tool.
 - Quantities are as eaten: legumes, pasta, rice and similar foods are cooked unless the user says raw or dry. Do not ask about this; just use cooked values.
 - propose_meal and propose_workout never save anything: the user confirms in the app. Do not say the activity was added; after the tool call write one short sentence asking them to confirm.
 - The card shown by the tool call is the ONLY way the user can save something. Never write a proposal (title, details, calories) as plain text, and never say you prepared or logged something unless you called the tool in this same turn. If you have the data, call the tool; if you do not, ask.
@@ -165,22 +165,58 @@ Rules:
 
       propose_workout: tool({
         description:
-          'Prepare a workout or exercise session for the user to confirm. Does not save anything.',
+          'Prepare a workout or exercise session for the user to confirm. Does not save anything. For strength exercises sets, reps and weight_kg are required; for cardio duration_min is required. If something required is missing the tool returns an error listing it: then ask the user, do not guess.',
         inputSchema: z.object({
-          title: z.string().min(1).max(100).describe('e.g. "Leg press 4x10 at 80 kg"'),
-          details: z.string().max(300).optional().describe('Sets, reps, weight, machine'),
+          title: z.string().min(1).max(100).describe('Exercise or activity name, e.g. "Leg press"'),
+          type: z.enum(['strength', 'cardio', 'other']),
+          sets: z.number().int().min(1).max(50).optional(),
+          reps: z.number().int().min(1).max(500).optional().describe('Reps per set'),
+          weight_kg: z.number().min(0).max(1000).optional().describe('Load in kg, 0 for bodyweight'),
           duration_min: z.number().min(1).max(600).optional(),
+          details: z.string().max(300).optional().describe('Extra notes, e.g. the machine'),
           calories_burned: z.number().min(0).max(5000).describe('Estimated kcal burned, positive number'),
           date: dateField,
         }),
-        execute: async (input) => ({
-          kind: 'workout' as const,
-          title: input.title,
-          details: input.details ?? null,
-          durationMin: input.duration_min ? Math.round(input.duration_min) : null,
-          caloriesBurned: Math.round(input.calories_burned),
-          date: resolveDate(input.date),
-        }),
+        execute: async (input) => {
+          const missing: string[] = [];
+          if (input.type === 'strength') {
+            if (input.sets === undefined) missing.push('sets');
+            if (input.reps === undefined) missing.push('reps');
+            if (input.weight_kg === undefined) missing.push('weight_kg');
+          }
+          if (input.type === 'cardio' && input.duration_min === undefined) {
+            missing.push('duration_min');
+          }
+          if (missing.length > 0) {
+            return {
+              error: 'missing_info' as const,
+              missing,
+              instruction:
+                'Nothing was prepared. Ask the user for these values in one short question, then call the tool again.',
+            };
+          }
+
+          const load =
+            input.weight_kg === undefined
+              ? null
+              : input.weight_kg > 0
+                ? `${input.weight_kg} kg`
+                : 'bodyweight';
+          const volume =
+            input.sets !== undefined && input.reps !== undefined
+              ? `${input.sets} × ${input.reps}`
+              : null;
+          const details = [volume, load, input.details].filter(Boolean).join(' · ');
+
+          return {
+            kind: 'workout' as const,
+            title: input.title,
+            details: details || null,
+            durationMin: input.duration_min ? Math.round(input.duration_min) : null,
+            caloriesBurned: Math.round(input.calories_burned),
+            date: resolveDate(input.date),
+          };
+        },
       }),
 
       get_day: tool({
