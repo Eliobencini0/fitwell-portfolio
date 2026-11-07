@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { getT } from '@/i18n/server';
 import { profile as profileMessages } from '@/i18n/messages/profile';
 import { LanguageSelector } from '@/components/profile/LanguageSelector';
+import { ProfileForm } from '@/components/profile/ProfileForm';
 
 export default async function ProfilePage() {
   const t = await getT(profileMessages);
@@ -15,47 +16,44 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('full_name, daily_calorie_target, daily_water_target')
-    .eq('id', user.id)
-    .single();
+  const [profileRes, weightRes] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+    supabase
+      .from('body_measurements')
+      .select('weight')
+      .eq('user_id', user.id)
+      .not('weight', 'is', null)
+      .order('date', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+
+  if (profileRes.error) console.error('profiles query failed', profileRes.error);
+  const profile = profileRes.data;
+
+  const sex = profile?.sex;
+  const toNumberOrNull = (value: unknown) =>
+    value === null || value === undefined ? null : Number(value);
 
   return (
     <div className="space-y-6 pb-24">
       <h2 className="text-2xl font-bold text-foreground">{t('title')}</h2>
 
       <div className="rounded-2xl border border-border/50 bg-card p-5 space-y-4">
-        <h3 className="text-sm font-semibold text-foreground">{t('language')}</h3>
-        <LanguageSelector />
-      </div>
+        <ProfileForm
+          email={user.email ?? ''}
+          initial={{
+            fullName: profile?.full_name ?? '',
+            sex: sex === 'male' || sex === 'female' || sex === 'other' ? sex : null,
+            heightCm: toNumberOrNull(profile?.height_cm),
+            weightKg: toNumberOrNull(weightRes.data?.weight),
+            dailyCalorieTarget: profile?.daily_calorie_target ?? 2000,
+            dailyWaterTarget: profile?.daily_water_target ?? 10,
+          }}
+        />
 
-      <div className="rounded-2xl border border-border/50 bg-card p-5 space-y-4">
-        <div>
-          <p className="text-xs text-muted-foreground">{t('email')}</p>
-          <p className="text-sm font-medium text-foreground">{user.email}</p>
-        </div>
-
-        <div>
-          <p className="text-xs text-muted-foreground">{t('name')}</p>
-          <p className="text-sm font-medium text-foreground">
-            {profile?.full_name || t('notSet')}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p className="text-xs text-muted-foreground">{t('calorieTarget')}</p>
-            <p className="text-sm font-medium text-foreground">
-              {t('kcal', { value: profile?.daily_calorie_target ?? 2000 })}
-            </p>
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">{t('waterTarget')}</p>
-            <p className="text-sm font-medium text-foreground">
-              {t('glasses', { value: profile?.daily_water_target ?? 10 })}
-            </p>
-          </div>
+        <div className="border-t border-border/50 pt-4">
+          <LanguageSelector />
         </div>
       </div>
     </div>

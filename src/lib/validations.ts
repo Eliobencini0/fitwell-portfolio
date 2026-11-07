@@ -60,6 +60,16 @@ export const profileSchema = z.object({
   macroFats: z.number().min(0).max(100).optional(),
 });
 
+// Profile details edited from the profile page (empty optional fields are null)
+export const profileDetailsSchema = z.object({
+  fullName: z.string().trim().max(100).nullable(),
+  sex: z.enum(['male', 'female', 'other']).nullable(),
+  heightCm: z.number().min(50).max(250).nullable(),
+  weightKg: z.number().min(20).max(500).nullable(),
+  dailyCalorieTarget: z.number().int().min(500).max(10000),
+  dailyWaterTarget: z.number().int().min(1).max(50),
+});
+
 // Body measurement schema
 export const bodyMeasurementSchema = z.object({
   weight: z.number().min(20).max(500).optional(),
@@ -74,5 +84,6 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type ActivityInput = z.infer<typeof activitySchema>;
 export type HydrationInput = z.infer<typeof hydrationSchema>;
+export type ProfileDetailsInput = z.infer<typeof profileDetailsSchema>;
 export type ProfileInput = z.infer<typeof profileSchema>;
 export type BodyMeasurementInput = z.infer<typeof bodyMeasurementSchema>;
