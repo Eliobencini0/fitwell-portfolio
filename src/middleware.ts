@@ -15,8 +15,11 @@ export async function middleware(request: NextRequest) {
     !supabaseUrl.includes('placeholder') &&
     !supabaseKey.includes('placeholder');
 
-  // If Supabase is not configured, allow all routes
+  // Without Supabase there is no auth: allow routes in development only, never in production
   if (!isSupabaseConfigured) {
+    if (process.env.NODE_ENV === 'production') {
+      return new NextResponse('Service unavailable: authentication is not configured', { status: 503 });
+    }
     return supabaseResponse;
   }
 
@@ -60,7 +63,10 @@ export async function middleware(request: NextRequest) {
   // Protect all routes except public routes
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
+    const next = request.nextUrl.pathname + request.nextUrl.search;
     url.pathname = '/login';
+    url.search = '';
+    url.searchParams.set('next', next);
     return NextResponse.redirect(url);
   }
 

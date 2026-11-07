@@ -56,7 +56,7 @@ export function MacrosChart({ data }: MacrosChartProps) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ payload }: any) => `${payload.percentage}%`}
+              label={({ payload }: { payload?: { percentage?: string | number } }) => `${payload?.percentage ?? ''}%`}
               outerRadius={80}
               fill="#8884d8"
               dataKey="value"
@@ -78,7 +78,7 @@ export function MacrosChart({ data }: MacrosChartProps) {
             />
             <Legend
               wrapperStyle={{ fontSize: '12px' }}
-              formatter={(value, entry: any) => `${value} (${entry.payload.percentage}%)`}
+              formatter={(value, entry) => `${value} (${(entry.payload as { percentage?: string | number } | undefined)?.percentage ?? ''}%)`}
             />
           </PieChart>
         </ResponsiveContainer>
