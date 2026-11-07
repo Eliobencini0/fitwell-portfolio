@@ -113,3 +113,31 @@
 ::-webkit-scrollbar-thumb:hover {
   background: oklch(0.40 0.03 240);
 }
+
+/* Chat intro: the lifter squats, lifts and holds, twice */
+@keyframes lift-twice {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  25% {
+    transform: translateY(8px) scale(1.05, 0.9);
+  }
+  55%, 70% {
+    transform: translateY(-16px) scale(1.15);
+  }
+  85% {
+    transform: translateY(2px) scale(1);
+  }
+}
+
+.animate-lift-twice {
+  display: inline-block;
+  animation: lift-twice 1.6s ease-in-out 2;
+  transform-origin: 50% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-lift-twice {
+    animation: none;
+  }
+}

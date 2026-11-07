@@ -10,7 +10,7 @@ const idSchema = z.string().uuid('Id non valido');
 function refresh() {
   revalidatePath('/dashboard');
   revalidatePath('/history');
-  revalidatePath('/stats');
+  revalidatePath('/plans');
 }
 
 async function requireUser() {
@@ -60,8 +60,13 @@ export async function createActivity(data: {
   activity_type: string;
   calories: number;
   description?: string;
+  carbs?: number;
+  protein?: number;
+  fats?: number;
+  completed?: boolean;
 }) {
-  const input = activitySchema.parse(data);
+  const { completed, ...rest } = data;
+  const input = activitySchema.parse(rest);
   const { supabase, user } = await requireUser();
 
   const { error } = await supabase
@@ -69,6 +74,7 @@ export async function createActivity(data: {
     .insert({
       user_id: user.id,
       ...input,
+      ...(completed ? { completed: true } : {}),
     });
 
   if (error) throw error;
