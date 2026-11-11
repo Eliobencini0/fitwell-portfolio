@@ -1,36 +1,36 @@
 -- =====================================================
 -- Migration: Add Macros to Daily Activities
 -- =====================================================
--- Data: 2026-03-06
--- Descrizione: Aggiunge campi macro (carbs, protein, fats)
---              a daily_activities per tracking quando
---              un'attività meal viene completata
+-- Date: 2026-03-06
+-- Description: Adds macro fields (carbs, protein, fats)
+--              to daily_activities to track them when
+--              a meal activity is completed
 -- =====================================================
 
--- Aggiungi colonne per macro
+-- Add columns for macros
 ALTER TABLE public.daily_activities
 ADD COLUMN IF NOT EXISTS carbs NUMERIC(6,2) DEFAULT 0,
 ADD COLUMN IF NOT EXISTS protein NUMERIC(6,2) DEFAULT 0,
 ADD COLUMN IF NOT EXISTS fats NUMERIC(6,2) DEFAULT 0;
 
--- Aggiungi commenti per documentazione
-COMMENT ON COLUMN public.daily_activities.carbs IS 'Carboidrati in grammi (se activity_type=meal)';
-COMMENT ON COLUMN public.daily_activities.protein IS 'Proteine in grammi (se activity_type=meal)';
-COMMENT ON COLUMN public.daily_activities.fats IS 'Grassi in grammi (se activity_type=meal)';
+-- Add comments for documentation
+COMMENT ON COLUMN public.daily_activities.carbs IS 'Carbs in grams (if activity_type=meal)';
+COMMENT ON COLUMN public.daily_activities.protein IS 'Protein in grams (if activity_type=meal)';
+COMMENT ON COLUMN public.daily_activities.fats IS 'Fats in grams (if activity_type=meal)';
 
 -- =====================================================
--- ✅ MIGRATION COMPLETATA!
+-- ✅ MIGRATION COMPLETE!
 -- =====================================================
--- Ora le daily_activities possono avere macro associati
--- Quando un'attività di tipo 'meal' viene completata,
--- i macro vengono conteggiati nel totale giornaliero
+-- daily_activities can now have associated macros
+-- When an activity of type 'meal' is completed,
+-- its macros count toward the daily total
 --
--- Esempio inserimento:
+-- Insert example:
 -- INSERT INTO daily_activities (
 --   user_id, date, title, activity_type,
 --   calories, carbs, protein, fats
 -- ) VALUES (
---   'user-id', '2026-03-06', 'Colazione',
+--   'user-id', '2026-03-06', 'Breakfast',
 --   'meal', 450, 50, 25, 15
 -- );
 -- =====================================================

@@ -1,21 +1,20 @@
 -- =====================================================
--- Fitness Tracker - Schema Database Supabase
+-- Fitness Tracker - Supabase Database Schema
 -- =====================================================
--- Versione ottimizzata - Esegui tutto in una volta
--- Project: kpxtxgemtpouqvdtjloq
+-- Optimized version - run everything at once
 -- =====================================================
 
 -- =====================================================
--- 1. ESTENSIONI
+-- 1. EXTENSIONS
 -- =====================================================
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- =====================================================
--- 2. TABELLE
+-- 2. TABLES
 -- =====================================================
 
--- Profili utente (estende auth.users)
+-- User profiles (extends auth.users)
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT,
@@ -27,7 +26,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Attività giornaliere (to-do list)
+-- Daily activities (to-do list)
 CREATE TABLE IF NOT EXISTS public.daily_activities (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -42,7 +41,7 @@ CREATE TABLE IF NOT EXISTS public.daily_activities (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Tracking idratazione
+-- Hydration tracking
 CREATE TABLE IF NOT EXISTS public.hydration_logs (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -53,7 +52,7 @@ CREATE TABLE IF NOT EXISTS public.hydration_logs (
   UNIQUE(user_id, date)
 );
 
--- Pasti dettagliati
+-- Detailed meals
 CREATE TABLE IF NOT EXISTS public.meals (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -69,7 +68,7 @@ CREATE TABLE IF NOT EXISTS public.meals (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Allenamenti dettagliati
+-- Detailed workouts
 CREATE TABLE IF NOT EXISTS public.workouts (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -83,7 +82,7 @@ CREATE TABLE IF NOT EXISTS public.workouts (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Storico peso e misurazioni
+-- Weight and measurement history
 CREATE TABLE IF NOT EXISTS public.body_measurements (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
@@ -99,7 +98,7 @@ CREATE TABLE IF NOT EXISTS public.body_measurements (
 );
 
 -- =====================================================
--- 3. INDICI PER PERFORMANCE
+-- 3. INDEXES FOR PERFORMANCE
 -- =====================================================
 
 CREATE INDEX IF NOT EXISTS idx_daily_activities_user_date
@@ -114,7 +113,7 @@ CREATE INDEX IF NOT EXISTS idx_body_measurements_user_date
   ON public.body_measurements(user_id, date);
 
 -- =====================================================
--- 4. ABILITA ROW LEVEL SECURITY
+-- 4. ENABLE ROW LEVEL SECURITY
 -- =====================================================
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
@@ -128,7 +127,7 @@ ALTER TABLE public.body_measurements ENABLE ROW LEVEL SECURITY;
 -- 5. POLICIES
 -- =====================================================
 
--- Policies per PROFILES
+-- Policies for PROFILES
 CREATE POLICY "Users can view own profile"
   ON public.profiles FOR SELECT
   TO authenticated
@@ -144,7 +143,7 @@ CREATE POLICY "Users can insert own profile"
   TO authenticated
   WITH CHECK (auth.uid() = id);
 
--- Policies per DAILY_ACTIVITIES
+-- Policies for DAILY_ACTIVITIES
 CREATE POLICY "Users can view own activities"
   ON public.daily_activities FOR SELECT
   TO authenticated
@@ -165,7 +164,7 @@ CREATE POLICY "Users can delete own activities"
   TO authenticated
   USING (auth.uid() = user_id);
 
--- Policies per HYDRATION_LOGS
+-- Policies for HYDRATION_LOGS
 CREATE POLICY "Users can view own hydration"
   ON public.hydration_logs FOR SELECT
   TO authenticated
@@ -181,7 +180,7 @@ CREATE POLICY "Users can update own hydration"
   TO authenticated
   USING (auth.uid() = user_id);
 
--- Policies per MEALS
+-- Policies for MEALS
 CREATE POLICY "Users can view own meals"
   ON public.meals FOR SELECT
   TO authenticated
@@ -202,7 +201,7 @@ CREATE POLICY "Users can delete own meals"
   TO authenticated
   USING (auth.uid() = user_id);
 
--- Policies per WORKOUTS
+-- Policies for WORKOUTS
 CREATE POLICY "Users can view own workouts"
   ON public.workouts FOR SELECT
   TO authenticated
@@ -223,7 +222,7 @@ CREATE POLICY "Users can delete own workouts"
   TO authenticated
   USING (auth.uid() = user_id);
 
--- Policies per BODY_MEASUREMENTS
+-- Policies for BODY_MEASUREMENTS
 CREATE POLICY "Users can view own measurements"
   ON public.body_measurements FOR SELECT
   TO authenticated
@@ -248,7 +247,7 @@ CREATE POLICY "Users can delete own measurements"
 -- 6. FUNCTIONS
 -- =====================================================
 
--- Function per creare profilo automaticamente dopo signup
+-- Function to create a profile automatically after signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -270,7 +269,7 @@ EXCEPTION
 END;
 $$;
 
--- Function per aggiornare updated_at
+-- Function to update updated_at
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -285,14 +284,14 @@ $$;
 -- 7. TRIGGERS
 -- =====================================================
 
--- Trigger per creare profilo quando un utente si registra
+-- Trigger to create a profile when a user signs up
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_new_user();
 
--- Triggers per aggiornare updated_at
+-- Triggers to update updated_at
 DROP TRIGGER IF EXISTS update_profiles_updated_at ON public.profiles;
 CREATE TRIGGER update_profiles_updated_at
   BEFORE UPDATE ON public.profiles
@@ -312,18 +311,17 @@ CREATE TRIGGER update_hydration_logs_updated_at
   EXECUTE FUNCTION public.update_updated_at_column();
 
 -- =====================================================
--- ✅ SETUP COMPLETATO!
+-- ✅ SETUP COMPLETE!
 -- =====================================================
--- Schema database creato con successo per il progetto:
--- kpxtxgemtpouqvdtjloq
+-- Database schema created successfully.
 --
--- Verifica:
--- 1. Vai su Table Editor - dovresti vedere 6 tabelle
--- 2. Vai su Database → Functions - 2 functions
--- 3. Vai su Authentication → Policies - policies attive
+-- Verify:
+-- 1. Go to Table Editor - you should see 6 tables
+-- 2. Go to Database → Functions - 2 functions
+-- 3. Go to Authentication → Policies - policies active
 --
--- Prossimi passi:
--- 1. Configura Email Authentication in Supabase
--- 2. Riavvia il server Next.js
--- 3. Testa l'app su http://localhost:3000
+-- Next steps:
+-- 1. Configure Email Authentication in Supabase
+-- 2. Restart the Next.js server
+-- 3. Test the app at http://localhost:3000
 -- =====================================================

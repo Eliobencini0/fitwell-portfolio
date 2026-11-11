@@ -1,25 +1,25 @@
 # Fitwell — Fitness Tracker PWA
 
-Progetto personale per riunire attività quotidiane, alimentazione, idratazione e progressi in una sola applicazione web, utilizzabile anche da smartphone.
+A personal project that brings daily activities, nutrition, hydration and progress together in one web app that also works on a phone.
 
-Questa repository è una copia pubblica del codice, preparata per il portfolio. Non include dati personali, credenziali o la cronologia della repository originale.
+This repository is a public copy of the code, prepared for a portfolio. It contains no personal data, credentials or history from the original repository.
 
-## Il prodotto
+## The product
 
-Fitwell raccoglie nella dashboard giornaliera attività, calorie, macronutrienti e idratazione. Lo storico consente di rivedere le attività; la sezione statistiche mostra i progressi nel tempo. Una sezione dedicata raccoglie obiettivi, piani di allenamento e piani alimentari associati all’account.
+The daily dashboard collects activities, calories, macronutrients and hydration. The history view lets you review past activities, and the statistics section shows progress over time. A dedicated section holds the goals, workout plans and meal plans linked to the account.
 
-Il progetto include autenticazione con Supabase, interfaccia responsive, configurazione PWA, feedback sulle azioni e annullamento delle eliminazioni. Le sezioni chat e foto sono presenti come struttura e non costituiscono funzionalità AI complete.
+The project includes Supabase authentication, a responsive interface, PWA configuration, feedback on actions and undo for deletions. The interface is available in English and Italian. The chat and photo sections exist as structure only: no AI feature works yet.
 
 ## Stack
 
-- Next.js e React con TypeScript
+- Next.js and React with TypeScript
 - Tailwind CSS e componenti shadcn/ui
-- Supabase per autenticazione e database PostgreSQL
-- Recharts per i grafici e next-pwa per la configurazione PWA
+- Supabase for authentication and the PostgreSQL database
+- Recharts for charts and next-pwa for the PWA setup
 
-## Avvio locale
+## Run locally
 
-Richiede Node.js compatibile con Next.js 16 e un progetto Supabase dedicato.
+Requires a Node.js version compatible with Next.js 16 and a dedicated Supabase project.
 
 ```bash
 git clone https://github.com/Eliobencini0/fitwell-portfolio.git
@@ -28,31 +28,31 @@ npm ci
 cp .env.example .env.local
 ```
 
-Inserire in `.env.local` l’URL e la chiave pubblica anon del proprio progetto Supabase. Non usare chiavi service role.
+Set the URL and the public anon key of your own Supabase project in `.env.local`. Do not use service role keys.
 
-In un database di sviluppo vuoto, applicare tramite l’editor SQL di Supabase, nell’ordine:
+In an empty development database, apply these scripts in the Supabase SQL editor, in this order:
 
 1. `supabase-schema.sql`
 2. `supabase-migration-macro-targets.sql`
 3. `supabase-migration-activity-macros.sql`
 4. `supabase-migration-personal-plan.sql`
 
-Gli script definiscono lo schema e le policy di accesso. Non includono account, misurazioni personali o piani precompilati. Prima di usarli, leggere gli script e configurarli per il proprio ambiente.
+The scripts define the schema and the access policies. They include no accounts, personal measurements or prefilled plans. Read them and adapt them to your own environment before use.
 
 ```bash
 npm run dev
 ```
 
-Aprire [localhost:3000](http://localhost:3000) e creare un account di test.
+Open [localhost:3000](http://localhost:3000) and create a test account.
 
-## Struttura
+## Structure
 
-- `src/app/`: pagine, dashboard e callback di autenticazione
-- `src/components/`: componenti UI, attività, storico e grafici
-- `src/lib/`: accesso a Supabase, azioni e validazione
-- `public/`: icone e manifest PWA
-- `supabase-*.sql`: schema e migrazioni del database
+- `src/app/`: pages, dashboard and authentication callbacks
+- `src/components/`: UI components, activities, history and charts
+- `src/lib/`: Supabase access, actions and validation
+- `public/`: icons and PWA manifest
+- `supabase-*.sql`: database schema and migrations
 
-## Limiti
+## Limits
 
-È un progetto personale in evoluzione. Il codice pubblico richiede un ambiente Supabase configurato; questa pubblicazione non include un audit di sicurezza o una verifica completa di tutte le funzionalità.
+This is a personal project in progress. The public code needs a configured Supabase environment. This release includes no security audit and no full check of every feature.
